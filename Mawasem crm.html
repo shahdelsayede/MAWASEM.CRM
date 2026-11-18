@@ -1,0 +1,2305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mawasem Export CRM | مواسم للحاصلات الزراعية</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter & Cairo for clean bilingual support -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- ExcelJS for Styled Excel Export with Logo -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'Cairo', 'sans-serif'],
+            arabic: ['Cairo', 'sans-serif']
+          },
+          colors: {
+            mawasem: {
+              dark: '#1B4332',
+              primary: '#2D6A4F',
+              accent: '#40916C',
+              mint: '#D8F3DC',
+              sand: '#F4F7F5',
+              gold: '#D4A373'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #F4F7F5;
+      color: #1E293B;
+    }
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #E2E8F0;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #94A3B8;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #2D6A4F;
+    }
+    .kanban-col {
+      min-height: 460px;
+    }
+    .calendar-day {
+      min-height: 105px;
+      transition: all 0.15s ease;
+    }
+    .calendar-day:hover {
+      background-color: #ecfdf5;
+      border-color: #10b981;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-mawasem-mint selection:text-mawasem-dark">
+
+  <!-- Top Navigation Header -->
+  <header class="bg-mawasem-dark text-white shadow-md sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+        
+        <!-- Prominent Brand Logo & Title -->
+        <div class="flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3.5">
+            <!-- Official Mawasem Logo Badge -->
+            <div onclick="document.getElementById('logoUploadInput').click()" class="group relative bg-white rounded-2xl px-4 py-1.5 shadow-md border-2 border-emerald-300/60 hover:border-lime-400 transition cursor-pointer flex items-center shrink-0" title="Mawasem Agricultural Crops • Click to change logo">
+              <div id="brandLogoContainer" class="flex items-center">
+                <svg class="h-10 sm:h-11 w-auto" viewBox="0 0 360 112" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mawasem Logo">
+                  <defs>
+                    <linearGradient id="mintLeafGrad" x1="175" y1="10" x2="205" y2="52" gradientUnits="userSpaceOnUse">
+                      <stop offset="0%" stop-color="#3E8914"/>
+                      <stop offset="55%" stop-color="#5DBB1E"/>
+                      <stop offset="100%" stop-color="#76C81C"/>
+                    </linearGradient>
+                    <linearGradient id="limeStemGrad" x1="196" y1="46" x2="335" y2="95" gradientUnits="userSpaceOnUse">
+                      <stop offset="0%" stop-color="#6DC017"/>
+                      <stop offset="100%" stop-color="#7AC914"/>
+                    </linearGradient>
+                  </defs>
+                  <path d="M180 12C187 13 196 19 201 28C205 35 205 43 201 48C194 48 186 43 181 35C176 26 176 17 180 12Z" fill="url(#mintLeafGrad)"/>
+                  <path d="M181 14C187 24 194 35 201 47" stroke="#2B660E" stroke-width="1.3" stroke-linecap="round"/>
+                  <path d="M186 22L194 20M189 28L198 26M193 34L201 33M186 23L182 29M190 30L186 36M194 37L191 42" stroke="#9BE546" stroke-width="0.9" stroke-linecap="round" opacity="0.85"/>
+                  <text x="12" y="96" fill="#0B3B1E" font-family="Georgia, 'Times New Roman', serif" font-size="68" font-weight="400" letter-spacing="-1.5">Mawase</text>
+                  <text x="263" y="96" fill="#76C81C" font-family="Georgia, 'Times New Roman', serif" font-size="68" font-weight="400" letter-spacing="-1">m</text>
+                  <path d="M200 47C206 64 226 67 254 52C284 36 318 38 331 59C341 75 333 93 324 96" stroke="url(#limeStemGrad)" stroke-width="3.6" stroke-linecap="round" fill="none"/>
+                </svg>
+              </div>
+              <span class="hidden group-hover:flex items-center gap-1 absolute -bottom-2.5 right-2 bg-slate-900 text-white text-[10px] font-medium px-2 py-0.5 rounded-full shadow">
+                <i class="fa-solid fa-camera text-[9px] text-lime-400"></i> Change
+              </span>
+              <input type="file" id="logoUploadInput" accept="image/png,image/jpeg,image/svg+xml,image/webp" onchange="handleLogoUpload(event)" class="hidden" />
+            </div>
+          </div>
+
+          <!-- Active Sales Rep Button (Mobile) -->
+          <button onclick="openProfileModal()" class="lg:hidden inline-flex items-center gap-1.5 bg-white/15 hover:bg-white/25 px-3 py-1.5 rounded-xl text-xs font-semibold border border-white/15 cursor-pointer">
+            <i class="fa-solid fa-user-tie text-amber-300"></i>
+            <span id="mobileRepName">Shahd Elsayed</span>
+          </button>
+        </div>
+
+        <!-- Global Actions, Sales Rep Profile & Date Mode -->
+        <div class="flex flex-wrap items-center gap-2">
+          <button onclick="openProfileModal()" class="hidden lg:inline-flex items-center gap-2 bg-white/12 hover:bg-white/20 border border-white/20 px-3 py-1.5 rounded-xl text-xs transition cursor-pointer" title="Switch or enter your Sales Rep name">
+            <div class="w-6 h-6 rounded-full bg-amber-400 text-mawasem-dark font-bold flex items-center justify-center text-[11px]" id="repAvatarInitials">SE</div>
+            <div class="text-left">
+              <div class="text-[10px] text-emerald-200 leading-none">Sales Rep</div>
+              <div class="font-bold text-white leading-tight" id="desktopRepName">Shahd Elsayed</div>
+            </div>
+            <i class="fa-solid fa-chevron-down text-[10px] text-emerald-200 ml-1"></i>
+          </button>
+
+          <!-- Reference Date Selector -->
+          <div class="hidden xl:flex items-center gap-1.5 bg-white/10 border border-white/15 px-2.5 py-1.5 rounded-xl text-xs">
+            <i class="fa-regular fa-calendar-check text-emerald-300"></i>
+            <input type="date" id="refDateInput" class="bg-transparent text-white font-semibold focus:outline-none cursor-pointer" title="Reference Date for Overdue / Due Today flags" />
+          </div>
+          <span id="mobileDateDisplay" class="hidden">2026-11-18</span>
+
+          <!-- Quick Add Company -->
+          <button onclick="openCompanyModal()" class="inline-flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-400 text-mawasem-dark font-semibold text-xs sm:text-sm px-3.5 py-2 rounded-xl shadow-sm transition cursor-pointer">
+            <i class="fa-solid fa-plus"></i>
+            <span>Add Company</span>
+          </button>
+
+          <!-- Quick Add Task -->
+          <button onclick="openTaskModal()" class="inline-flex items-center gap-1.5 bg-mawasem-primary hover:bg-mawasem-accent text-white font-medium text-xs sm:text-sm px-3.5 py-2 rounded-xl border border-emerald-400/30 shadow-sm transition cursor-pointer">
+            <i class="fa-solid fa-list-check"></i>
+            <span>Add Task</span>
+          </button>
+
+          <!-- Branded Excel Export Button -->
+          <button onclick="exportStyledExcel()" id="exportExcelBtn" class="inline-flex items-center gap-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs sm:text-sm px-4 py-2 rounded-xl shadow-sm transition cursor-pointer" title="تصدير شيت إكسل احترافي باللوجو">
+            <i class="fa-solid fa-file-excel"></i>
+            <span>تصدير إكسل</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="flex items-center justify-between gap-2 mt-3.5 pt-2.5 border-t border-white/10 overflow-x-auto no-scrollbar">
+        <div class="flex items-center gap-1 sm:gap-2">
+          <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn active-tab flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition whitespace-nowrap cursor-pointer">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span>Dashboard</span>
+          </button>
+          <button onclick="switchTab('table')" id="tab-table" class="tab-btn flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition whitespace-nowrap cursor-pointer">
+            <i class="fa-solid fa-table"></i>
+            <span>Pipeline (Table)</span>
+            <span id="navCompanyCount" class="bg-white/15 text-white text-[11px] px-2 py-0.5 rounded-full">8</span>
+          </button>
+          <button onclick="switchTab('kanban')" id="tab-kanban" class="tab-btn flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition whitespace-nowrap cursor-pointer">
+            <i class="fa-solid fa-columns"></i>
+            <span>Pipeline (Kanban)</span>
+          </button>
+          <button onclick="switchTab('tasks')" id="tab-tasks" class="tab-btn flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition whitespace-nowrap cursor-pointer">
+            <i class="fa-solid fa-check-double"></i>
+            <span>Tasks & Follow-ups</span>
+            <span id="navOpenTaskCount" class="bg-amber-400 text-mawasem-dark font-bold text-[11px] px-2 py-0.5 rounded-full">18</span>
+          </button>
+          <button onclick="switchTab('calendar')" id="tab-calendar" class="tab-btn flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition whitespace-nowrap cursor-pointer">
+            <i class="fa-solid fa-calendar-days"></i>
+            <span>Calendar (التقويم)</span>
+          </button>
+        </div>
+
+        <!-- Quick Team Scope Filter Toggle -->
+        <div class="hidden md:flex items-center gap-1.5 bg-white/10 p-1 rounded-xl text-xs shrink-0">
+          <button onclick="setTeamScope('all')" id="scope-all" class="px-2.5 py-1 rounded-lg font-semibold bg-white text-mawasem-dark transition cursor-pointer">All Team</button>
+          <button onclick="setTeamScope('mine')" id="scope-mine" class="px-2.5 py-1 rounded-lg font-medium text-emerald-100 hover:text-white transition cursor-pointer">My Leads</button>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- ==================== 1. DASHBOARD VIEW ==================== -->
+    <section id="view-dashboard" class="space-y-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="kpiGrid"></div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h2 class="text-base font-bold text-slate-800">Pipeline Stages Breakdown</h2>
+              <p class="text-xs text-slate-500">Click any stage to filter your pipeline</p>
+            </div>
+            <i class="fa-solid fa-filter text-slate-300"></i>
+          </div>
+          <div id="statusBreakdownList" class="space-y-3"></div>
+        </div>
+
+        <div class="lg:col-span-5 bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5 flex flex-col justify-between gap-5">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <div>
+                <h2 class="text-base font-bold text-slate-800">Markets by Country</h2>
+                <p class="text-xs text-slate-500">Click a market to filter buyers</p>
+              </div>
+              <i class="fa-solid fa-earth-americas text-mawasem-accent text-lg"></i>
+            </div>
+            <div id="countryCardsGrid" class="grid grid-cols-2 gap-2.5"></div>
+          </div>
+
+          <div class="pt-3 border-t border-slate-100">
+            <div class="flex items-center justify-between mb-2.5">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">Sales Team Leads</h3>
+              <span class="text-[11px] text-emerald-700 font-medium">Shared Workspace</span>
+            </div>
+            <div id="salesRepBreakdownList" class="flex flex-wrap gap-2"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse"></span>
+              <h2 class="text-base font-bold text-slate-800">Urgent Company Follow-ups</h2>
+            </div>
+            <span id="urgentFollowupsBadge" class="text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 px-2.5 py-0.5 rounded-full">0 Action Needed</span>
+          </div>
+          <div id="urgentCompaniesList" class="space-y-3 max-h-96 overflow-y-auto pr-1"></div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-bolt text-amber-500"></i>
+              <h2 class="text-base font-bold text-slate-800">Priority & Due Tasks</h2>
+            </div>
+            <button onclick="switchTab('tasks')" class="text-xs font-semibold text-mawasem-primary hover:underline cursor-pointer">Manage All Tasks &rarr;</button>
+          </div>
+          <div id="urgentTasksList" class="space-y-2.5 max-h-96 overflow-y-auto pr-1"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 2. PIPELINE TABLE VIEW ==================== -->
+    <section id="view-table" class="hidden space-y-4">
+      <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3">
+          <div class="lg:col-span-3 relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+            <input type="text" id="pipelineSearch" oninput="renderPipelineTable()" placeholder="Search company, email, phone, herb..." class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-mawasem-primary/30 focus:border-mawasem-primary" />
+          </div>
+
+          <div class="lg:col-span-2">
+            <select id="filterRep" onchange="renderPipelineTable()" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-mawasem-primary/30">
+              <option value="">All Sales Reps</option>
+            </select>
+          </div>
+
+          <div class="lg:col-span-2">
+            <select id="filterCountry" onchange="renderPipelineTable()" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-mawasem-primary/30">
+              <option value="">All Countries</option>
+            </select>
+          </div>
+
+          <div class="lg:col-span-2">
+            <select id="filterStatus" onchange="renderPipelineTable()" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-mawasem-primary/30">
+              <option value="">All Statuses</option>
+            </select>
+          </div>
+
+          <div class="lg:col-span-1">
+            <select id="filterPriority" onchange="renderPipelineTable()" class="w-full px-2.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-mawasem-primary/30">
+              <option value="">Priority</option>
+              <option value="High">High</option>
+              <option value="Medium">Medium</option>
+              <option value="Low">Low</option>
+            </select>
+          </div>
+
+          <div class="lg:col-span-2 flex gap-2">
+            <select id="filterFlag" onchange="renderPipelineTable()" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-mawasem-primary/30">
+              <option value="">All Flags</option>
+              <option value="Overdue">Overdue</option>
+              <option value="Due Today">Due Today</option>
+              <option value="Upcoming">Upcoming</option>
+            </select>
+            <button onclick="resetPipelineFilters()" title="Clear Filters" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-sm transition cursor-pointer">
+              <i class="fa-solid fa-filter-circle-xmark"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-50/90 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                <th class="py-3.5 px-4">Company & Owner</th>
+                <th class="py-3.5 px-4">Contacts, Emails & Phones</th>
+                <th class="py-3.5 px-4">Products of Interest</th>
+                <th class="py-3.5 px-4">Status & Priority</th>
+                <th class="py-3.5 px-4">Follow-up & Next Action</th>
+                <th class="py-3.5 px-4 text-right">Quick Actions</th>
+              </tr>
+            </thead>
+            <tbody id="pipelineTableBody" class="divide-y divide-slate-100 text-sm"></tbody>
+          </table>
+        </div>
+        <div id="pipelineEmptyState" class="hidden py-12 text-center">
+          <i class="fa-solid fa-seedling text-3xl text-slate-300 mb-2"></i>
+          <p class="text-slate-600 font-medium">No companies match your current filters.</p>
+          <button onclick="resetPipelineFilters()" class="mt-2 text-xs text-mawasem-primary font-semibold hover:underline cursor-pointer">Reset Filters</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 3. PIPELINE KANBAN VIEW ==================== -->
+    <section id="view-kanban" class="hidden space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-white px-4 py-3 rounded-2xl border border-slate-200/80 shadow-sm">
+        <div class="flex items-center gap-2 text-sm text-slate-600">
+          <i class="fa-solid fa-hand-pointer text-mawasem-primary"></i>
+          <span>Drag & drop company cards between stages, or click copy to grab all buyer emails.</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <input type="text" id="kanbanSearch" oninput="renderKanban()" placeholder="Filter board..." class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-mawasem-primary" />
+        </div>
+      </div>
+
+      <div id="kanbanBoard" class="flex gap-4 overflow-x-auto pb-4 items-start"></div>
+    </section>
+
+    <!-- ==================== 4. TASKS & FOLLOW-UPS VIEW ==================== -->
+    <section id="view-tasks" class="hidden space-y-4">
+      <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3">
+          <div class="lg:col-span-4 relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+            <input type="text" id="taskSearch" oninput="renderTasks()" placeholder="Search tasks or notes..." class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-mawasem-primary/30" />
+          </div>
+          <div class="lg:col-span-3">
+            <select id="taskFilterCompany" onchange="renderTasks()" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-mawasem-primary/30">
+              <option value="">All Companies</option>
+            </select>
+          </div>
+          <div class="lg:col-span-2">
+            <select id="taskFilterStatus" onchange="renderTasks()" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-mawasem-primary/30">
+              <option value="">All Task Statuses</option>
+              <option value="To Do">To Do</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Done">Done</option>
+            </select>
+          </div>
+          <div class="lg:col-span-3 flex gap-2">
+            <select id="taskFilterFlag" onchange="renderTasks()" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-mawasem-primary/30">
+              <option value="">All Due Flags</option>
+              <option value="Overdue">Overdue</option>
+              <option value="Due Today">Due Today</option>
+              <option value="Upcoming">Upcoming</option>
+              <option value="Done">Done</option>
+            </select>
+            <button onclick="resetTaskFilters()" title="Clear Filters" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-sm transition cursor-pointer">
+              <i class="fa-solid fa-filter-circle-xmark"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+        <div class="divide-y divide-slate-100" id="tasksListContainer"></div>
+        <div id="tasksEmptyState" class="hidden py-12 text-center">
+          <i class="fa-solid fa-check-circle text-3xl text-emerald-300 mb-2"></i>
+          <p class="text-slate-600 font-medium">No tasks match your filters.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 5. INTERACTIVE CALENDAR VIEW ==================== -->
+    <section id="view-calendar" class="hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Monthly Calendar Grid (2 cols) -->
+        <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5">
+          <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+            <div class="flex items-center gap-3">
+              <button type="button" onclick="changeMonth(-1)" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-emerald-100 text-slate-700 flex items-center justify-center transition cursor-pointer">
+                <i class="fa-solid fa-chevron-right"></i>
+              </button>
+              <h2 id="calendar-month-title" class="text-xl font-extrabold text-emerald-950 min-w-[180px] text-center">
+                نوفمبر 2026
+              </h2>
+              <button type="button" onclick="changeMonth(1)" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-emerald-100 text-slate-700 flex items-center justify-center transition cursor-pointer">
+                <i class="fa-solid fa-chevron-left"></i>
+              </button>
+            </div>
+            <div class="flex items-center gap-2">
+              <button type="button" onclick="goToToday()" class="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition cursor-pointer">
+                اليوم
+              </button>
+              <button type="button" onclick="openTaskModal()" class="px-4 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-bold shadow transition cursor-pointer">
+                + إضافة مهمة في التقويم
+              </button>
+            </div>
+          </div>
+
+          <!-- Days of Week Header -->
+          <div class="grid grid-cols-7 gap-1.5 text-center text-xs font-extrabold text-slate-500 mb-2">
+            <div class="py-2 bg-slate-50 rounded-lg">الأحد</div>
+            <div class="py-2 bg-slate-50 rounded-lg">الإثنين</div>
+            <div class="py-2 bg-slate-50 rounded-lg">الثلاثاء</div>
+            <div class="py-2 bg-slate-50 rounded-lg">الأربعاء</div>
+            <div class="py-2 bg-slate-50 rounded-lg">الخميس</div>
+            <div class="py-2 bg-slate-50 rounded-lg">الجمعة</div>
+            <div class="py-2 bg-slate-50 rounded-lg">السبت</div>
+          </div>
+
+          <!-- Calendar Days Grid -->
+          <div id="calendar-grid" class="grid grid-cols-7 gap-1.5"></div>
+        </div>
+
+        <!-- Selected Day Agenda Panel (1 col) -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+              <div>
+                <span class="text-xs font-bold text-emerald-700">جدول أعمال اليوم المحدد</span>
+                <h3 id="selected-date-label" class="text-lg font-extrabold text-slate-800 mt-0.5">2026-11-18</h3>
+              </div>
+              <button type="button" onclick="openTaskModalForSelectedDate()" class="w-9 h-9 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center shadow cursor-pointer" title="إضافة مهمة لهذا اليوم">
+                <i class="fa-solid fa-plus"></i>
+              </button>
+            </div>
+
+            <div id="selected-day-tasks" class="space-y-3 max-h-[450px] overflow-y-auto"></div>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-slate-100 text-xs text-slate-500 flex items-center justify-between">
+            <span><i class="fa-solid fa-circle text-emerald-500 text-[8px] ml-1"></i> متابعة عميل</span>
+            <span><i class="fa-solid fa-circle text-amber-500 text-[8px] ml-1"></i> إرسال عينات / مستندات</span>
+            <span><i class="fa-solid fa-circle text-rose-500 text-[8px] ml-1"></i> عاجل</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== MODAL: ADD / EDIT COMPANY (WITH MULTI-EMAIL & PHONE SUPPORT) ==================== -->
+  <div id="companyModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full overflow-hidden border border-slate-200 my-auto">
+      <div class="bg-mawasem-dark text-white px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <i class="fa-solid fa-building text-emerald-300"></i>
+          <h3 id="companyModalTitle" class="font-bold text-base sm:text-lg">Add New Export Company</h3>
+        </div>
+        <button onclick="closeCompanyModal()" class="text-white/70 hover:text-white p-1 rounded-lg transition cursor-pointer">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <form id="companyForm" onsubmit="saveCompany(event)" class="p-6 space-y-4 max-h-[84vh] overflow-y-auto">
+        <input type="hidden" id="compId" />
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Company Name *</label>
+            <input type="text" id="compName" required placeholder="e.g., Raetze GmbH" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-mawasem-primary/30 focus:border-mawasem-primary" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Country *</label>
+            <input type="text" id="compCountry" list="countrySuggestions" required placeholder="Select or type country..." class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-mawasem-primary/30 focus:border-mawasem-primary" />
+            <datalist id="countrySuggestions">
+              <option value="Germany"><option value="Spain"><option value="Australia"><option value="USA"><option value="UK"><option value="Poland"><option value="Netherlands"><option value="France"><option value="Italy"><option value="UAE"><option value="Saudi Arabia">
+            </datalist>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Primary Contact Person</label>
+            <input type="text" id="compContact" placeholder="e.g., David Maerten" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-mawasem-primary/30" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Role / Title</label>
+            <input type="text" id="compRole" placeholder="e.g., Purchase Manager" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-mawasem-primary/30" />
+          </div>
+        </div>
+
+        <!-- Dynamic Multi-Email Section (Primary + Alternative Emails) -->
+        <div class="bg-mawasem-sand/90 border border-emerald-200/80 rounded-2xl p-4 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <div>
+              <label class="block text-xs font-bold text-mawasem-dark">
+                <i class="fa-solid fa-envelopes-bulk text-mawasem-primary mr-1"></i>
+                Emails (Primary & Alternative Contacts)
+              </label>
+              <p class="text-[11px] text-slate-500">Add backup emails (GM, Info, QC, or 2nd buyer) in case the primary contact doesn't reply.</p>
+            </div>
+            <button type="button" onclick="addEmailInputRow()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-mawasem-primary hover:bg-mawasem-dark text-white text-xs font-semibold shadow-2xs transition cursor-pointer shrink-0">
+              <i class="fa-solid fa-plus text-[10px]"></i> Add Alternative Email
+            </button>
+          </div>
+
+          <div id="emailRowsContainer" class="space-y-2"></div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Client Phone Number(s) / Mobile</label>
+            <input type="text" id="compPhone" placeholder="e.g., +49-3923-6121-37" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-mawasem-primary/30" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Website / LinkedIn Link</label>
+            <input type="text" id="compContactInfo" placeholder="https://www.raetzel.com or LinkedIn URL" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-mawasem-primary/30" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Pipeline Status</label>
+            <select id="compStatus" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-mawasem-primary/30">
+              <option value="To Research">To Research</option>
+              <option value="Ready to Contact">Ready to Contact</option>
+              <option value="Contacted - Waiting Reply">Contacted - Waiting Reply</option>
+              <option value="Replied - Action Needed">Replied - Action Needed</option>
+              <option value="Docs / Approval in Progress">Docs / Approval in Progress</option>
+              <option value="Samples / Quote">Samples / Quote</option>
+              <option value="Won">Won</option>
+              <option value="Lost / Not Interested">Lost / Not Interested</option>
+            </select>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Priority</label>
+              <select id="compPriority" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-mawasem-primary/30">
+                <option value="High">High</option>
+                <option value="Medium" selected>Medium</option>
+                <option value="Low">Low</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Lead Source</label>
+              <input type="text" id="compSource" placeholder="Research, Tridge..." class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-mawasem-primary/30" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Assigned Sales Rep</label>
+              <input type="text" id="compAssignedTo" list="salesRepSuggestions" placeholder="e.g., Shahd Elsayed" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-mawasem-primary/30" />
+              <datalist id="salesRepSuggestions">
+                <option value="Shahd Elsayed"><option value="Ibrahim"><option value="Export Team">
+              </datalist>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Products of Interest (Mawasem Crops)</label>
+          <input type="text" id="compProducts" placeholder="Type or click tags below to add..." class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-mawasem-primary/30" />
+          <div class="flex flex-wrap gap-1.5 mt-2" id="quickProductTags"></div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Last Contact Date</label>
+            <input type="date" id="compLastContact" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-mawasem-primary/30" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Next Follow-up Date</label>
+            <input type="date" id="compNextFollowUp" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-mawasem-primary/30" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Next Action</label>
+          <input type="text" id="compNextAction" placeholder="e.g., Follow up with alternative email if no reply" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-mawasem-primary/30" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Last Action / Notes</label>
+          <textarea id="compNotes" rows="2" placeholder="Record email history, bounce notes, buyer preferences..." class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-mawasem-primary/30"></textarea>
+        </div>
+
+        <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
+          <button type="button" onclick="closeCompanyModal()" class="px-4 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition cursor-pointer">Cancel</button>
+          <button type="submit" class="px-5 py-2 rounded-xl text-sm font-semibold bg-mawasem-primary hover:bg-mawasem-dark text-white shadow-sm transition cursor-pointer">Save Company</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: ADD / EDIT TASK ==================== -->
+  <div id="taskModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-200 my-auto">
+      <div class="bg-mawasem-dark text-white px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <i class="fa-solid fa-list-check text-emerald-300"></i>
+          <h3 id="taskModalTitle" class="font-bold text-base sm:text-lg">Add New Follow-up Task</h3>
+        </div>
+        <button onclick="closeTaskModal()" class="text-white/70 hover:text-white p-1 rounded-lg transition cursor-pointer">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <form id="taskForm" onsubmit="saveTask(event)" class="p-6 space-y-4">
+        <input type="hidden" id="taskId" />
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Related Company / Account *</label>
+          <input type="text" id="taskCompany" list="taskCompanySuggestions" required placeholder="Select or type company name..." class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-mawasem-primary/30" />
+          <datalist id="taskCompanySuggestions"></datalist>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Task Description *</label>
+          <input type="text" id="taskTitle" required placeholder="e.g., Send follow-up to alternative email address" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-mawasem-primary/30" />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Due Date</label>
+            <input type="date" id="taskDueDate" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-mawasem-primary/30" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Assigned To</label>
+            <input type="text" id="taskAssignedTo" list="salesRepSuggestions" placeholder="Sales Rep name..." class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-mawasem-primary/30" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Priority</label>
+            <select id="taskPriority" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-mawasem-primary/30">
+              <option value="High">High</option>
+              <option value="Medium" selected>Medium</option>
+              <option value="Low">Low</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Status</label>
+            <select id="taskStatus" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-mawasem-primary/30">
+              <option value="To Do">To Do</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Done">Done</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Notes</label>
+          <textarea id="taskNotes" rows="2" placeholder="Additional context or attachment reminders..." class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-mawasem-primary/30"></textarea>
+        </div>
+
+        <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
+          <button type="button" onclick="closeTaskModal()" class="px-4 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition cursor-pointer">Cancel</button>
+          <button type="submit" class="px-5 py-2 rounded-xl text-sm font-semibold bg-mawasem-primary hover:bg-mawasem-dark text-white shadow-sm transition cursor-pointer">Save Task</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: CONFIRMATION DIALOG ==================== -->
+  <div id="confirmModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-200">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <div>
+          <h4 id="confirmModalTitle" class="text-base font-bold text-slate-900">Confirm Action</h4>
+          <p id="confirmModalMessage" class="text-xs text-slate-600 mt-0.5">Are you sure you want to proceed?</p>
+        </div>
+      </div>
+      <div class="mt-5 flex justify-end gap-2.5">
+        <button type="button" onclick="closeConfirmModal()" class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer">Cancel</button>
+        <button type="button" id="confirmModalBtn" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold cursor-pointer">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: SALES REP PROFILE ==================== -->
+  <div id="profileModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-200">
+      <div class="bg-mawasem-dark text-white px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <i class="fa-solid fa-users text-amber-300"></i>
+          <h3 class="font-bold text-base">Mawasem Sales Team Profile</h3>
+        </div>
+        <button onclick="closeProfileModal()" class="text-white/70 hover:text-white p-1 rounded-lg transition cursor-pointer">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+      <form onsubmit="saveSalesProfile(event)" class="p-6 space-y-4">
+        <p class="text-xs text-slate-600 leading-relaxed">
+          Enter your name so all leads and notes are properly identified as yours.
+        </p>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Your Name (Sales Executive) *</label>
+          <input type="text" id="profileNameInput" required placeholder="e.g., Shahd Elsayed..." class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-mawasem-primary/30 focus:border-mawasem-primary" />
+        </div>
+        <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
+          <button type="button" onclick="closeProfileModal()" class="px-4 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 cursor-pointer">Cancel</button>
+          <button type="submit" class="px-5 py-2 rounded-xl text-sm font-semibold bg-mawasem-primary hover:bg-mawasem-dark text-white cursor-pointer">Save Profile</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- ==================== APPLICATION LOGIC & LOCAL STORAGE ==================== -->
+  <script>
+    const STORAGE_KEYS = {
+      REP_NAME: 'mawasem_active_rep_v3',
+      CUSTOM_LOGO: 'mawasem_custom_logo_v3',
+      REF_DATE: 'mawasem_crm_ref_date_v3',
+      COMPANIES: 'mawasem_saved_companies_v4',
+      TASKS: 'mawasem_saved_tasks_v3'
+    };
+
+    const PIPELINE_STAGES = [
+      'To Research',
+      'Ready to Contact',
+      'Contacted - Waiting Reply',
+      'Replied - Action Needed',
+      'Docs / Approval in Progress',
+      'Samples / Quote',
+      'Won',
+      'Lost / Not Interested'
+    ];
+
+    const MAWASEM_PRODUCTS = [
+      'Marjoram', 'Basil', 'Spearmint', 'Peppermint', 'Chamomile',
+      'Thyme', 'Oregano', 'Parsley', 'Dill', 'Lemongrass',
+      'Hibiscus', 'Fennel', 'Cumin', 'Coriander'
+    ];
+
+    const INITIAL_COMPANIES = [
+      {
+        id: 'comp-1',
+        name: 'Raetze',
+        country: 'Germany',
+        contact: 'David Maerten',
+        role: 'Purchase Manager',
+        phone: '+49-3923-6121-37',
+        email: 'd.maerten@raetzel.com, mbeinkauf@raetzel.com',
+        emailsList: [
+          { address: 'd.maerten@raetzel.com', label: 'Primary (David Maerten)' },
+          { address: 'mbeinkauf@raetzel.com', label: 'Purchasing Dept (Alt)' }
+        ],
+        contactInfo: 'https://www.raetzel.com',
+        source: 'Inbound / Direct',
+        products: 'Marjoram, basil, spearmint, thyme, parsley, oregano, dill tips',
+        status: 'Contacted - Waiting Reply',
+        priority: 'High',
+        lastContact: '2026-11-11',
+        notes: 'all required documents have been submitted',
+        nextFollowUp: '2026-11-16',
+        nextAction: 'follow up and send email again',
+        assignedTo: 'Shahd Elsayed',
+        updatedBy: 'Shahd Elsayed'
+      },
+      {
+        id: 'comp-2',
+        name: 'Especias Moriana',
+        country: 'Spain',
+        contact: 'Manuel Moriana',
+        role: 'International Manager',
+        phone: '',
+        email: 'mmoriana@especiasmoriana.com',
+        emailsList: [
+          { address: 'mmoriana@especiasmoriana.com', label: 'Primary (Manuel Moriana)' }
+        ],
+        contactInfo: 'https://www.linkedin.com/in/manuel-moriana-204b9295/',
+        source: 'Research',
+        products: 'Herbs & Spices',
+        status: 'Contacted - Waiting Reply',
+        priority: 'High',
+        lastContact: '2026-10-20',
+        notes: 'email have been sent',
+        nextFollowUp: '2026-11-18',
+        nextAction: 'send mail again',
+        assignedTo: 'Shahd Elsayed',
+        updatedBy: 'Shahd Elsayed'
+      },
+      {
+        id: 'comp-3',
+        name: 'Tea Drop',
+        country: 'Australia',
+        contact: 'Mevan Silva',
+        role: 'General Manager Operations',
+        phone: '',
+        email: 'mevan@teadrop.com.au',
+        emailsList: [
+          { address: 'mevan@teadrop.com.au', label: 'Primary (Mevan Silva)' }
+        ],
+        contactInfo: 'https://www.linkedin.com/company/teadroptea/home/',
+        source: 'Research',
+        products: 'Chamomile / Chamomile blossoms, Peppermint leaves, Lemongrass',
+        status: 'Ready to Contact',
+        priority: 'High',
+        lastContact: '2026-11-17',
+        notes: 'email is ready to send',
+        nextFollowUp: '2026-11-19',
+        nextAction: 'Send intro email',
+        assignedTo: 'Shahd Elsayed',
+        updatedBy: 'Shahd Elsayed'
+      },
+      {
+        id: 'comp-4',
+        name: 'KG Foods (Katoomba Global Foods)',
+        country: 'Australia',
+        contact: 'Nelson Albert, Dev Balendran',
+        role: 'CEO / General Manager / Head Commercial Manager',
+        phone: '',
+        email: 'nelson@kgfoods.com.au, dev@kgfoods.com.au, joe@kgfoods.com.au',
+        emailsList: [
+          { address: 'nelson@kgfoods.com.au', label: 'Primary (Nelson Albert - CEO)' },
+          { address: 'dev@kgfoods.com.au', label: 'Alt 1 (Dev Balendran - GM)' },
+          { address: 'joe@kgfoods.com.au', label: 'Alt 2 (Joe - Commercial)' }
+        ],
+        contactInfo: 'https://www.linkedin.com/company/katoombafoods/home/',
+        source: 'Research',
+        products: 'Dried basil, marjoram, mint, thyme, parsley, oregano',
+        status: 'Contacted - Waiting Reply',
+        priority: 'Medium',
+        lastContact: '2026-11-11',
+        notes: 'Intro email sent',
+        nextFollowUp: '2026-11-18',
+        nextAction: 'Follow up with Joe',
+        assignedTo: 'Shahd Elsayed',
+        updatedBy: 'Shahd Elsayed'
+      },
+      {
+        id: 'comp-5',
+        name: 'Teavision',
+        country: 'Australia',
+        contact: 'Procurement Team',
+        role: 'Buyer',
+        phone: '',
+        email: '',
+        emailsList: [],
+        contactInfo: 'https://teavision.com.au',
+        source: 'Research',
+        products: 'Peppermint',
+        status: 'Ready to Contact',
+        priority: 'High',
+        lastContact: '',
+        notes: 'Confirm if intro email was sent',
+        nextFollowUp: '2026-11-15',
+        nextAction: 'Finalize and send intro email',
+        assignedTo: 'Shahd Elsayed',
+        updatedBy: 'Shahd Elsayed'
+      },
+      {
+        id: 'comp-6',
+        name: 'SHK Global',
+        country: 'Australia',
+        contact: 'Sourcing Team',
+        role: 'Importer',
+        phone: '',
+        email: 'info@shkglobal.com.au',
+        emailsList: [
+          { address: 'info@shkglobal.com.au', label: 'Primary (General Sourcing)' }
+        ],
+        contactInfo: 'https://shkglobal.com.au (Melbourne)',
+        source: 'Research',
+        products: 'Herbs & Spices',
+        status: 'Ready to Contact',
+        priority: 'Medium',
+        lastContact: '',
+        notes: 'Second priority after Teavision',
+        nextFollowUp: '2026-11-16',
+        nextAction: 'Send intro email',
+        assignedTo: 'Shahd Elsayed',
+        updatedBy: 'Shahd Elsayed'
+      },
+      {
+        id: 'comp-7',
+        name: 'LDJ30 Investments',
+        country: 'Australia',
+        contact: '',
+        role: '',
+        phone: '',
+        email: '',
+        emailsList: [],
+        contactInfo: '',
+        source: 'Tridge',
+        products: '',
+        status: 'To Research',
+        priority: 'Low',
+        lastContact: '',
+        notes: 'Find contact via Tridge/LinkedIn',
+        nextFollowUp: '2026-11-18',
+        nextAction: 'Find contact route',
+        assignedTo: 'Shahd Elsayed',
+        updatedBy: 'Shahd Elsayed'
+      },
+      {
+        id: 'comp-8',
+        name: "Hoyt's (Mixed Herbs)",
+        country: 'Australia',
+        contact: '',
+        role: '',
+        phone: '',
+        email: '',
+        emailsList: [],
+        contactInfo: '',
+        source: 'Woolworths product page',
+        products: 'Mixed herbs',
+        status: 'To Research',
+        priority: 'Low',
+        lastContact: '',
+        notes: 'Research decision maker',
+        nextFollowUp: '2026-11-19',
+        nextAction: 'Research company',
+        assignedTo: 'Shahd Elsayed',
+        updatedBy: 'Shahd Elsayed'
+      }
+    ];
+
+    const INITIAL_TASKS = [
+      { id: 'task-1', company: 'Raetzel (Hans-Felix Rätzel GmbH)', title: 'Research Raetzel more (company background) before resending the email', dueDate: '2026-11-16', priority: 'High', status: 'To Do', notes: 'From CRM note: resend email and research more.', assignedTo: 'Shahd Elsayed' },
+      { id: 'task-2', company: 'Raetzel (Hans-Felix Rätzel GmbH)', title: 'Convert the 6 spec files from .docx to PDF (Basil, Marjoram, Thyme, Oregano, Dill, Spearmint)', dueDate: '2026-11-15', priority: 'High', status: 'To Do', notes: 'Their server rejects Word attachments (554 5.7.1).', assignedTo: 'Shahd Elsayed' },
+      { id: 'task-3', company: 'Raetzel (Hans-Felix Rätzel GmbH)', title: 'Prepare the Parsley specification (PDF) - the 7th product, missing from the bounced email', dueDate: '2026-11-15', priority: 'High', status: 'To Do', notes: 'David asked for 7 products.', assignedTo: 'Shahd Elsayed' },
+      { id: 'task-4', company: 'Raetzel (Hans-Felix Rätzel GmbH)', title: 'Collect photos + video tour: gate, administration, production, storage', dueDate: '2026-11-17', priority: 'High', status: 'To Do', notes: 'Requested by David on 29 Oct.', assignedTo: 'Shahd Elsayed' },
+      { id: 'task-5', company: 'Raetzel (Hans-Felix Rätzel GmbH)', title: 'Complete the supplier self-assessment (4.2.3) and export it as PDF', dueDate: '2026-11-17', priority: 'High', status: 'To Do', notes: '', assignedTo: 'Shahd Elsayed' },
+      { id: 'task-6', company: 'Raetzel (Hans-Felix Rätzel GmbH)', title: 'Collect current certificates as PDF (EU Organic, ISO 22000, 9001, 14001, 45001; SMETA in progress)', dueDate: '2026-11-17', priority: 'High', status: 'To Do', notes: 'As listed in 11 Nov email.', assignedTo: 'Shahd Elsayed' },
+      { id: 'task-7', company: 'Raetzel (Hans-Felix Rätzel GmbH)', title: "Review Raetzel's QC requirements and terms and confirm Mawasem can meet them", dueDate: '2026-11-17', priority: 'High', status: 'To Do', notes: "Attached to David's 29 Oct email.", assignedTo: 'Shahd Elsayed' },
+      { id: 'task-8', company: 'Raetzel (Hans-Felix Rätzel GmbH)', title: 'Resend the reply to David (PDF only, cc ibrahim@mawasem-agri.com) and check Inbox for a new bounce', dueDate: '2026-11-18', priority: 'High', status: 'To Do', notes: 'David said there is no rush.', assignedTo: 'Shahd Elsayed' },
+      { id: 'task-9', company: 'Especias Moriana', title: 'Confirm if the intro email to Manuel Moriana was sent; if not, send it (respectful tone, show knowledge of company history)', dueDate: '2026-11-16', priority: 'Medium', status: 'To Do', notes: '', assignedTo: 'Shahd Elsayed' },
+      { id: 'task-10', company: 'Especias Moriana', title: 'Check the LinkedIn connection request status', dueDate: '2026-11-18', priority: 'Medium', status: 'To Do', notes: '', assignedTo: 'Shahd Elsayed' },
+      { id: 'task-11', company: 'Teavision', title: 'Finalize and send the intro email (peppermint)', dueDate: '2026-11-15', priority: 'High', status: 'In Progress', notes: 'Confirm if it was already sent.', assignedTo: 'Shahd Elsayed' },
+      { id: 'task-12', company: 'SHK Global', title: 'Send intro email to info@shkglobal.com.au', dueDate: '2026-11-16', priority: 'Medium', status: 'To Do', notes: 'Second priority after Teavision.', assignedTo: 'Shahd Elsayed' },
+      { id: 'task-13', company: 'KG Foods (Katoomba Global Foods)', title: 'Follow up with Joe if there is no reply to the 11 Nov email', dueDate: '2026-11-18', priority: 'Medium', status: 'To Do', notes: '', assignedTo: 'Shahd Elsayed' },
+      { id: 'task-14', company: 'KG Foods (Katoomba Global Foods)', title: 'Reach Parthkumar Ajudiya (procurement manager) via LinkedIn - no email found', dueDate: '2026-11-18', priority: 'Medium', status: 'To Do', notes: '', assignedTo: 'Shahd Elsayed' },
+      { id: 'task-15', company: 'The Whole Herb Company, Inc.', title: 'Add the contact person / email and follow up on the LinkedIn message', dueDate: '2026-11-18', priority: 'Medium', status: 'To Do', notes: '', assignedTo: 'Shahd Elsayed' },
+      { id: 'task-16', company: 'LDJ30 Investments', title: 'Find a contact route (Tridge message, website, LinkedIn)', dueDate: '2026-11-18', priority: 'Low', status: 'To Do', notes: '', assignedTo: 'Shahd Elsayed' },
+      { id: 'task-17', company: "Hoyt's (Mixed Herbs)", title: 'Research the company and find the decision maker', dueDate: '2026-11-19', priority: 'Low', status: 'To Do', notes: '', assignedTo: 'Shahd Elsayed' },
+      { id: 'task-18', company: 'General - Spain', title: 'Continue researching the remaining Spanish target companies, one by one', dueDate: '', priority: 'Low', status: 'To Do', notes: '9 Spanish companies in total; Especias Moriana is one.', assignedTo: 'Shahd Elsayed' }
+    ];
+
+    let companies = [];
+    let tasks = [];
+    let referenceDate = '2026-11-18';
+    let currentSalesRep = localStorage.getItem(STORAGE_KEYS.REP_NAME) || 'Shahd Elsayed';
+    let teamScope = 'all';
+    let currentTab = 'dashboard';
+    let draggedCompanyId = null;
+
+    let currentCalDate = new Date();
+    let selectedDateStr = '2026-11-18';
+
+    const DEFAULT_SVG_LOGO_HTML = `
+      <svg class="h-10 sm:h-11 w-auto" viewBox="0 0 360 112" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mawasem Logo">
+        <defs>
+          <linearGradient id="mintLeafGrad" x1="175" y1="10" x2="205" y2="52" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#3E8914"/>
+            <stop offset="55%" stop-color="#5DBB1E"/>
+            <stop offset="100%" stop-color="#76C81C"/>
+          </linearGradient>
+          <linearGradient id="limeStemGrad" x1="196" y1="46" x2="335" y2="95" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#6DC017"/>
+            <stop offset="100%" stop-color="#7AC914"/>
+          </linearGradient>
+        </defs>
+        <path d="M180 12C187 13 196 19 201 28C205 35 205 43 201 48C194 48 186 43 181 35C176 26 176 17 180 12Z" fill="url(#mintLeafGrad)"/>
+        <path d="M181 14C187 24 194 35 201 47" stroke="#2B660E" stroke-width="1.3" stroke-linecap="round"/>
+        <path d="M186 22L194 20M189 28L198 26M193 34L201 33M186 23L182 29M190 30L186 36M194 37L191 42" stroke="#9BE546" stroke-width="0.9" stroke-linecap="round" opacity="0.85"/>
+        <text x="12" y="96" fill="#0B3B1E" font-family="Georgia, 'Times New Roman', serif" font-size="68" font-weight="400" letter-spacing="-1.5">Mawase</text>
+        <text x="263" y="96" fill="#76C81C" font-family="Georgia, 'Times New Roman', serif" font-size="68" font-weight="400" letter-spacing="-1">m</text>
+        <path d="M200 47C206 64 226 67 254 52C284 36 318 38 331 59C341 75 333 93 324 96" stroke="url(#limeStemGrad)" stroke-width="3.6" stroke-linecap="round" fill="none"/>
+      </svg>
+    `;
+
+    function getCompanyEmails(comp) {
+      if (Array.isArray(comp.emailsList) && comp.emailsList.length > 0) {
+        return comp.emailsList.filter(e => e && e.address && e.address.trim());
+      }
+      if (comp.email && typeof comp.email === 'string') {
+        return comp.email
+          .split(',')
+          .map(s => s.trim())
+          .filter(Boolean)
+          .map((addr, idx) => ({
+            address: addr,
+            label: idx === 0 ? 'Primary' : `Alt ${idx}`
+          }));
+      }
+      return [];
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      applySavedCustomLogo();
+      updateRepDisplay();
+      initRefDate();
+      renderProductQuickTags();
+      loadLocalData();
+
+      if (!localStorage.getItem(STORAGE_KEYS.REP_NAME)) {
+        setTimeout(() => { openProfileModal(); }, 600);
+      }
+    });
+
+    function loadLocalData() {
+      const savedComps = localStorage.getItem(STORAGE_KEYS.COMPANIES);
+      const savedTasks = localStorage.getItem(STORAGE_KEYS.TASKS);
+
+      if (savedComps) {
+        try { companies = JSON.parse(savedComps); } catch(e) { companies = JSON.parse(JSON.stringify(INITIAL_COMPANIES)); }
+      } else {
+        companies = JSON.parse(JSON.stringify(INITIAL_COMPANIES));
+        saveCompaniesLocal();
+      }
+
+      if (savedTasks) {
+        try { tasks = JSON.parse(savedTasks); } catch(e) { tasks = JSON.parse(JSON.stringify(INITIAL_TASKS)); }
+      } else {
+        tasks = JSON.parse(JSON.stringify(INITIAL_TASKS));
+        saveTasksLocal();
+      }
+      renderAll();
+    }
+
+    function saveCompaniesLocal() { localStorage.setItem(STORAGE_KEYS.COMPANIES, JSON.stringify(companies)); }
+    function saveTasksLocal() { localStorage.setItem(STORAGE_KEYS.TASKS, JSON.stringify(tasks)); }
+
+    function persistCompanyToCloud(companyObj) {
+      const idx = companies.findIndex(c => c.id === companyObj.id);
+      if (idx !== -1) companies[idx] = companyObj;
+      else companies.unshift(companyObj);
+      saveCompaniesLocal();
+      renderAll();
+    }
+
+    function removeCompanyFromCloud(id) {
+      companies = companies.filter(c => c.id !== id);
+      saveCompaniesLocal();
+      renderAll();
+    }
+
+    function persistTaskToCloud(taskObj) {
+      const idx = tasks.findIndex(t => t.id === taskObj.id);
+      if (idx !== -1) tasks[idx] = taskObj;
+      else tasks.unshift(taskObj);
+      saveTasksLocal();
+      renderAll();
+    }
+
+    function removeTaskFromCloud(id) {
+      tasks = tasks.filter(t => t.id !== id);
+      saveTasksLocal();
+      renderAll();
+    }
+
+    function applySavedCustomLogo() {
+      const savedLogo = localStorage.getItem(STORAGE_KEYS.CUSTOM_LOGO);
+      const container = document.getElementById('brandLogoContainer');
+      if (savedLogo) {
+        container.innerHTML = `<img src="${savedLogo}" alt="Mawasem Logo" class="h-10 max-w-[160px] object-contain" />`;
+      } else {
+        container.innerHTML = DEFAULT_SVG_LOGO_HTML;
+      }
+    }
+
+    function handleLogoUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          localStorage.setItem(STORAGE_KEYS.CUSTOM_LOGO, e.target.result);
+          applySavedCustomLogo();
+          showToast('Logo updated successfully!', 'success');
+        } catch (err) {
+          showToast('Image too large. Please use a smaller file.', 'error');
+        }
+      };
+      reader.readAsDataURL(file);
+      event.target.value = '';
+    }
+
+    function updateRepDisplay() {
+      document.getElementById('desktopRepName').textContent = currentSalesRep;
+      document.getElementById('mobileRepName').textContent = currentSalesRep;
+      const initials = currentSalesRep.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || 'MW';
+      document.getElementById('repAvatarInitials').textContent = initials;
+    }
+
+    function openProfileModal() {
+      document.getElementById('profileNameInput').value = currentSalesRep;
+      document.getElementById('profileModal').classList.remove('hidden');
+    }
+    function closeProfileModal() { document.getElementById('profileModal').classList.add('hidden'); }
+
+    function saveSalesProfile(e) {
+      e.preventDefault();
+      const val = document.getElementById('profileNameInput').value.trim();
+      if (val) {
+        currentSalesRep = val;
+        localStorage.setItem(STORAGE_KEYS.REP_NAME, currentSalesRep);
+        updateRepDisplay();
+        renderAll();
+        showToast(`Updated active sales rep: ${currentSalesRep}`, 'success');
+      }
+      closeProfileModal();
+    }
+
+    function setTeamScope(scope) {
+      teamScope = scope;
+      const allBtn = document.getElementById('scope-all');
+      const mineBtn = document.getElementById('scope-mine');
+      if (scope === 'all') {
+        allBtn.className = 'px-2.5 py-1 rounded-lg font-semibold bg-white text-mawasem-dark transition cursor-pointer';
+        mineBtn.className = 'px-2.5 py-1 rounded-lg font-medium text-emerald-100 hover:text-white transition cursor-pointer';
+      } else {
+        mineBtn.className = 'px-2.5 py-1 rounded-lg font-semibold bg-white text-mawasem-dark transition cursor-pointer';
+        allBtn.className = 'px-2.5 py-1 rounded-lg font-medium text-emerald-100 hover:text-white transition cursor-pointer';
+      }
+      renderAll();
+    }
+
+    function getScopedCompanies() {
+      if (teamScope === 'mine') {
+        return companies.filter(c => (c.assignedTo || '').toLowerCase() === currentSalesRep.toLowerCase());
+      }
+      return companies;
+    }
+
+    function getScopedTasks() {
+      if (teamScope === 'mine') {
+        return tasks.filter(t => (t.assignedTo || '').toLowerCase() === currentSalesRep.toLowerCase());
+      }
+      return tasks;
+    }
+
+    function initRefDate() {
+      const savedDate = localStorage.getItem(STORAGE_KEYS.REF_DATE);
+      if (savedDate) referenceDate = savedDate;
+      const refInput = document.getElementById('refDateInput');
+      const mobileDisplay = document.getElementById('mobileDateDisplay');
+      refInput.value = referenceDate;
+      mobileDisplay.textContent = referenceDate;
+
+      refInput.addEventListener('change', (e) => {
+        if (e.target.value) {
+          referenceDate = e.target.value;
+          mobileDisplay.textContent = referenceDate;
+          localStorage.setItem(STORAGE_KEYS.REF_DATE, referenceDate);
+          renderAll();
+          showToast(`Reference date updated to ${referenceDate}`, 'info');
+        }
+      });
+    }
+
+    function renderAll() {
+      updateNavBadges();
+      populateFilterDropdowns();
+      renderDashboard();
+      renderPipelineTable();
+      renderKanban();
+      renderTasks();
+      renderCalendar();
+    }
+
+    function updateNavBadges() {
+      document.getElementById('navCompanyCount').textContent = getScopedCompanies().length;
+      document.getElementById('navOpenTaskCount').textContent = getScopedTasks().filter(t => t.status !== 'Done').length;
+    }
+
+    function switchTab(tabName) {
+      currentTab = tabName;
+      ['dashboard', 'table', 'kanban', 'tasks', 'calendar'].forEach(v => {
+        const section = document.getElementById(`view-${v}`);
+        const btn = document.getElementById(`tab-${v}`);
+        if (v === tabName) {
+          section.classList.remove('hidden');
+          btn.classList.add('bg-white', 'text-mawasem-dark', 'font-bold', 'shadow-xs');
+          btn.classList.remove('text-emerald-100', 'hover:bg-white/10');
+        } else {
+          section.classList.add('hidden');
+          btn.classList.remove('bg-white', 'text-mawasem-dark', 'font-bold', 'shadow-xs');
+          btn.classList.add('text-emerald-100', 'hover:bg-white/10');
+        }
+      });
+      if (tabName === 'calendar') renderCalendar();
+    }
+
+    setTimeout(() => switchTab('dashboard'), 0);
+
+    function calculateFlag(dateStr, isCompleted = false) {
+      if (isCompleted) return 'Done';
+      if (!dateStr) return 'No Date';
+      if (dateStr < referenceDate) return 'Overdue';
+      if (dateStr === referenceDate) return 'Due Today';
+      return 'Upcoming';
+    }
+
+    function renderFlagBadge(flag) {
+      switch (flag) {
+        case 'Overdue': return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-rose-50 text-rose-700 border border-rose-200"><i class="fa-solid fa-circle-exclamation text-[10px]"></i> Overdue</span>`;
+        case 'Due Today': return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-200"><i class="fa-solid fa-clock text-[10px]"></i> Due Today</span>`;
+        case 'Upcoming': return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-sky-50 text-sky-700 border border-sky-200"><i class="fa-regular fa-calendar text-[10px]"></i> Upcoming</span>`;
+        case 'Done': return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200"><i class="fa-solid fa-check text-[10px]"></i> Done</span>`;
+        default: return `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-slate-50 text-slate-400 border border-slate-200/70">No Date</span>`;
+      }
+    }
+
+    function renderPriorityBadge(priority) {
+      const map = {
+        High: 'bg-rose-100/80 text-rose-800 border-rose-200',
+        Medium: 'bg-amber-100/80 text-amber-800 border-amber-200',
+        Low: 'bg-slate-100 text-slate-700 border-slate-200'
+      };
+      return `<span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold border ${map[priority] || map.Medium}">${escapeHTML(priority || 'Medium')}</span>`;
+    }
+
+    function getStatusStyle(status) {
+      const styles = {
+        'To Research': { badge: 'bg-slate-100 text-slate-700 border-slate-300', bar: 'bg-slate-400', header: 'border-t-4 border-t-slate-400' },
+        'Ready to Contact': { badge: 'bg-sky-50 text-sky-700 border-sky-200', bar: 'bg-sky-500', header: 'border-t-4 border-t-sky-500' },
+        'Contacted - Waiting Reply': { badge: 'bg-amber-50 text-amber-800 border-amber-200', bar: 'bg-amber-500', header: 'border-t-4 border-t-amber-500' },
+        'Replied - Action Needed': { badge: 'bg-purple-50 text-purple-700 border-purple-200', bar: 'bg-purple-500', header: 'border-t-4 border-t-purple-500' },
+        'Docs / Approval in Progress': { badge: 'bg-indigo-50 text-indigo-700 border-indigo-200', bar: 'bg-indigo-500', header: 'border-t-4 border-t-indigo-500' },
+        'Samples / Quote': { badge: 'bg-teal-50 text-teal-700 border-teal-200', bar: 'bg-teal-500', header: 'border-t-4 border-t-teal-500' },
+        'Won': { badge: 'bg-emerald-100 text-emerald-800 border-emerald-300', bar: 'bg-emerald-600', header: 'border-t-4 border-t-emerald-600' },
+        'Lost / Not Interested': { badge: 'bg-rose-50 text-rose-700 border-rose-200', bar: 'bg-rose-400', header: 'border-t-4 border-t-rose-400' }
+      };
+      return styles[status] || styles['To Research'];
+    }
+
+    function renderDashboard() {
+      const scopedComps = getScopedCompanies();
+      const scopedTasks = getScopedTasks();
+
+      const totalCompanies = scopedComps.length;
+      const overdueCompanies = scopedComps.filter(c => calculateFlag(c.nextFollowUp, c.status === 'Won' || c.status === 'Lost / Not Interested') === 'Overdue');
+      const dueTodayCompanies = scopedComps.filter(c => calculateFlag(c.nextFollowUp, c.status === 'Won' || c.status === 'Lost / Not Interested') === 'Due Today');
+      const openTasks = scopedTasks.filter(t => t.status !== 'Done');
+      const overdueTasks = openTasks.filter(t => calculateFlag(t.dueDate, false) === 'Overdue');
+
+      document.getElementById('kpiGrid').innerHTML = `
+        <div onclick="resetPipelineFilters(); switchTab('table');" class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5 hover:border-mawasem-primary/50 transition cursor-pointer">
+          <div class="flex items-center justify-between"><span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Export Leads</span><div class="w-9 h-9 rounded-xl bg-mawasem-mint/70 text-mawasem-dark flex items-center justify-center"><i class="fa-solid fa-building"></i></div></div>
+          <div class="mt-3 flex items-baseline gap-2"><span class="text-3xl font-bold text-slate-800">${totalCompanies}</span><span class="text-xs text-emerald-600 font-medium">Active Accounts</span></div>
+        </div>
+        <div onclick="filterTableByFlag('Overdue')" class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5 hover:border-rose-300 transition cursor-pointer">
+          <div class="flex items-center justify-between"><span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Overdue Follow-ups</span><div class="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center"><i class="fa-solid fa-bell"></i></div></div>
+          <div class="mt-3 flex items-baseline gap-2"><span class="text-3xl font-bold text-rose-600">${overdueCompanies.length}</span><span class="text-xs text-slate-500">Companies need reply</span></div>
+        </div>
+        <div onclick="filterTableByFlag('Due Today')" class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5 hover:border-amber-300 transition cursor-pointer">
+          <div class="flex items-center justify-between"><span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Due Today (${referenceDate})</span><div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center"><i class="fa-solid fa-calendar-day"></i></div></div>
+          <div class="mt-3 flex items-baseline gap-2"><span class="text-3xl font-bold text-amber-600">${dueTodayCompanies.length}</span><span class="text-xs text-slate-500">Scheduled today</span></div>
+        </div>
+        <div onclick="switchTab('tasks')" class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5 hover:border-mawasem-primary/50 transition cursor-pointer">
+          <div class="flex items-center justify-between"><span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Open Action Tasks</span><div class="w-9 h-9 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center"><i class="fa-solid fa-list-check"></i></div></div>
+          <div class="mt-3 flex items-baseline gap-2"><span class="text-3xl font-bold text-slate-800">${openTasks.length}</span><span class="text-xs font-medium text-rose-600">${overdueTasks.length} overdue</span></div>
+        </div>
+      `;
+
+      document.getElementById('statusBreakdownList').innerHTML = PIPELINE_STAGES.map(stage => {
+        const count = scopedComps.filter(c => c.status === stage).length;
+        const pct = totalCompanies > 0 ? Math.round((count / totalCompanies) * 100) : 0;
+        const style = getStatusStyle(stage);
+        return `
+          <div onclick="filterTableByStatus('${escapeHTML(stage)}')" class="group cursor-pointer">
+            <div class="flex items-center justify-between text-xs mb-1">
+              <span class="font-medium text-slate-700 group-hover:text-mawasem-primary transition">${escapeHTML(stage)}</span>
+              <span class="font-bold text-slate-800">${count} <span class="text-slate-400 font-normal">(${pct}%)</span></span>
+            </div>
+            <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+              <div class="h-full ${style.bar} rounded-full transition-all duration-300" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      const countryCounts = {};
+      scopedComps.forEach(c => { const ctry = (c.country || 'Other').trim(); countryCounts[ctry] = (countryCounts[ctry] || 0) + 1; });
+      const countryFlags = { 'Germany': '🇩🇪', 'Spain': '🇪🇸', 'Australia': '🇦🇺', 'USA': '🇺🇸', 'UK': '🇬🇧', 'Poland': '🇵🇱', 'Netherlands': '🇳🇱', 'France': '🇫🇷', 'Italy': '🇮🇹', 'UAE': '🇦🇪', 'Saudi Arabia': '🇸🇦' };
+      
+      document.getElementById('countryCardsGrid').innerHTML = Object.entries(countryCounts).sort((a,b)=>b[1]-a[1]).map(([ctry, cnt]) => `
+        <div onclick="filterTableByCountry('${escapeHTML(ctry)}')" class="p-3.5 rounded-xl bg-mawasem-sand/85 hover:bg-mawasem-mint/50 border border-slate-200/70 transition cursor-pointer flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <span class="text-xl">${countryFlags[ctry] || '🌍'}</span>
+            <div><div class="text-sm font-bold text-slate-800">${escapeHTML(ctry)}</div><div class="text-[11px] text-slate-500">${cnt} Buyer${cnt>1?'s':''}</div></div>
+          </div>
+          <span class="w-7 h-7 rounded-lg bg-white text-mawasem-dark font-bold text-xs flex items-center justify-center shadow-2xs">${cnt}</span>
+        </div>
+      `).join('') || '<p class="text-xs text-slate-400 col-span-2">No countries added.</p>';
+
+      const repCounts = {};
+      companies.forEach(c => { const rep = (c.assignedTo || 'Unassigned').trim(); repCounts[rep] = (repCounts[rep] || 0) + 1; });
+      document.getElementById('salesRepBreakdownList').innerHTML = Object.entries(repCounts).map(([rep, cnt]) => `
+        <button onclick="filterTableByRep('${escapeHTML(rep)}')" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-mawasem-mint text-xs font-semibold text-slate-700 transition cursor-pointer">
+          <i class="fa-solid fa-user-tie text-mawasem-primary text-[10px]"></i><span>${escapeHTML(rep)}</span><span class="bg-white text-mawasem-dark px-1.5 py-0.2 rounded-md text-[11px] font-bold">${cnt}</span>
+        </button>
+      `).join('');
+
+      const urgentComps = [...overdueCompanies, ...dueTodayCompanies];
+      document.getElementById('urgentFollowupsBadge').textContent = `${urgentComps.length} Action Needed`;
+      document.getElementById('urgentCompaniesList').innerHTML = urgentComps.length === 0 ? `<div class="py-8 text-center text-slate-400 text-sm"><i class="fa-regular fa-face-smile text-2xl text-emerald-400 mb-1"></i><p>All company follow-ups are up to date!</p></div>` : urgentComps.map(c => {
+        const emails = getCompanyEmails(c);
+        const allEmailsStr = emails.map(e => e.address).join(', ');
+        return `
+        <div class="p-3.5 rounded-xl border border-slate-200/90 hover:border-mawasem-primary/40 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="space-y-1">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="font-bold text-sm text-slate-800">${escapeHTML(c.name)}</span>
+              <span class="text-xs text-slate-500">• ${escapeHTML(c.country)}</span>
+              ${renderFlagBadge(calculateFlag(c.nextFollowUp))}
+              ${c.phone ? `<span class="text-xs font-semibold text-slate-600"><i class="fa-solid fa-phone text-emerald-600 mr-1"></i>${escapeHTML(c.phone)}</span>` : ''}
+            </div>
+            <p class="text-xs text-slate-600"><span class="font-semibold text-mawasem-dark">Next:</span> ${escapeHTML(c.nextAction || 'Follow up')}</p>
+          </div>
+          <div class="flex items-center gap-1.5 shrink-0">
+            ${emails.length > 0 ? `<button onclick="copyText('${escapeHTML(allEmailsStr)}', 'Copied ${emails.length} email(s)!')" class="px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 hover:bg-mawasem-mint/50 text-xs font-medium text-slate-700 transition cursor-pointer" title="Copy All Emails"><i class="fa-regular fa-copy"></i></button>` : ''}
+            <button onclick="logContactToday('${c.id}')" class="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium transition cursor-pointer"><i class="fa-solid fa-paper-plane mr-1"></i>Done Today</button>
+            <button onclick="openCompanyModal('${c.id}')" class="px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-xs text-slate-600 transition cursor-pointer"><i class="fa-solid fa-pen"></i></button>
+          </div>
+        </div>
+      `;
+      }).join('');
+
+      const urgentTasks = openTasks.filter(t => ['Overdue', 'Due Today'].includes(calculateFlag(t.dueDate, false)) || t.priority === 'High').slice(0, 8);
+      document.getElementById('urgentTasksList').innerHTML = urgentTasks.length === 0 ? `<p class="text-sm text-slate-400 text-center py-8">No urgent tasks right now.</p>` : urgentTasks.map(t => `
+        <div class="p-3 rounded-xl border border-slate-200/80 hover:bg-slate-50 flex items-start justify-between gap-3">
+          <div class="flex items-start gap-2.5">
+            <input type="checkbox" onchange="toggleTaskDone('${t.id}')" class="mt-1 w-4 h-4 rounded text-mawasem-primary focus:ring-mawasem-primary cursor-pointer" />
+            <div>
+              <div class="text-xs font-bold text-mawasem-primary">${escapeHTML(t.company)}</div>
+              <div class="text-xs font-medium text-slate-800 leading-snug mt-0.5">${escapeHTML(t.title)}</div>
+              <div class="flex flex-wrap items-center gap-2 mt-1.5">${renderFlagBadge(calculateFlag(t.dueDate, false))}${renderPriorityBadge(t.priority)}</div>
+            </div>
+          </div>
+          <button onclick="openTaskModal('${t.id}')" class="text-slate-400 hover:text-slate-700 p-1 cursor-pointer"><i class="fa-solid fa-pen text-xs"></i></button>
+        </div>
+      `).join('');
+    }
+
+    function populateFilterDropdowns() {
+      const repSelect = document.getElementById('filterRep');
+      const currentRep = repSelect.value;
+      const reps = [...new Set(companies.map(c => c.assignedTo).filter(Boolean))].sort();
+      repSelect.innerHTML = `<option value="">All Sales Reps</option>` + reps.map(r => `<option value="${escapeHTML(r)}">${escapeHTML(r)}</option>`).join('');
+      repSelect.value = currentRep;
+
+      document.getElementById('salesRepSuggestions').innerHTML = [...new Set(['Shahd Elsayed', 'Ibrahim', currentSalesRep, ...reps])].map(r => `<option value="${escapeHTML(r)}">`).join('');
+
+      const countrySelect = document.getElementById('filterCountry');
+      const currentCtry = countrySelect.value;
+      const countries = [...new Set(companies.map(c => c.country).filter(Boolean))].sort();
+      countrySelect.innerHTML = `<option value="">All Countries</option>` + countries.map(c => `<option value="${escapeHTML(c)}">${escapeHTML(c)}</option>`).join('');
+      countrySelect.value = currentCtry;
+
+      const statusSelect = document.getElementById('filterStatus');
+      const currentStatus = statusSelect.value;
+      statusSelect.innerHTML = `<option value="">All Statuses</option>` + PIPELINE_STAGES.map(s => `<option value="${escapeHTML(s)}">${escapeHTML(s)}</option>`).join('');
+      statusSelect.value = currentStatus;
+
+      const taskCompSelect = document.getElementById('taskFilterCompany');
+      const currentTaskComp = taskCompSelect.value;
+      const allCompanyNames = [...new Set([...companies.map(c => c.name), ...tasks.map(t => t.company)].filter(Boolean))].sort();
+      taskCompSelect.innerHTML = `<option value="">All Companies</option>` + allCompanyNames.map(n => `<option value="${escapeHTML(n)}">${escapeHTML(n)}</option>`).join('');
+      taskCompSelect.value = currentTaskComp;
+
+      document.getElementById('taskCompanySuggestions').innerHTML = allCompanyNames.map(n => `<option value="${escapeHTML(n)}">`).join('');
+    }
+
+    function renderPipelineTable() {
+      const search = document.getElementById('pipelineSearch').value.toLowerCase().trim();
+      const repFilter = document.getElementById('filterRep').value;
+      const countryFilter = document.getElementById('filterCountry').value;
+      const statusFilter = document.getElementById('filterStatus').value;
+      const priorityFilter = document.getElementById('filterPriority').value;
+      const flagFilter = document.getElementById('filterFlag').value;
+
+      const filtered = getScopedCompanies().filter(c => {
+        const flag = calculateFlag(c.nextFollowUp, c.status === 'Won' || c.status === 'Lost / Not Interested');
+        const emails = getCompanyEmails(c);
+        const allEmailsSearch = emails.map(e => `${e.address} ${e.label}`).join(' ');
+        const matchesSearch = !search || [c.name, c.country, c.contact, c.role, c.phone, c.email, allEmailsSearch, c.contactInfo, c.products, c.notes, c.nextAction, c.assignedTo].some(f => (f || '').toLowerCase().includes(search));
+        const matchesRep = !repFilter || c.assignedTo === repFilter;
+        const matchesCountry = !countryFilter || c.country === countryFilter;
+        const matchesStatus = !statusFilter || c.status === statusFilter;
+        const matchesPriority = !priorityFilter || c.priority === priorityFilter;
+        const matchesFlag = !flagFilter || flag === flagFilter;
+        return matchesSearch && matchesRep && matchesCountry && matchesStatus && matchesPriority && matchesFlag;
+      });
+
+      const tbody = document.getElementById('pipelineTableBody');
+      const emptyState = document.getElementById('pipelineEmptyState');
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      tbody.innerHTML = filtered.map(c => {
+        const flag = calculateFlag(c.nextFollowUp, c.status === 'Won' || c.status === 'Lost / Not Interested');
+        const statusStyle = getStatusStyle(c.status);
+        const emails = getCompanyEmails(c);
+        const allEmailsStr = emails.map(e => e.address).join(', ');
+
+        return `
+          <tr class="hover:bg-mawasem-sand/60 transition align-top">
+            <td class="py-3.5 px-4">
+              <div class="font-bold text-slate-900 text-sm">${escapeHTML(c.name)}</div>
+              <div class="flex flex-wrap items-center gap-1.5 mt-1 text-xs text-slate-600">
+                <span class="font-medium bg-slate-100 px-2 py-0.5 rounded-md">${escapeHTML(c.country || 'N/A')}</span>
+                ${c.assignedTo ? `<span class="inline-flex items-center gap-1 text-[11px] font-semibold bg-emerald-50 text-mawasem-primary border border-emerald-200/70 px-2 py-0.5 rounded-md"><i class="fa-solid fa-user-tie text-[9px]"></i>${escapeHTML(c.assignedTo)}</span>` : ''}
+              </div>
+              ${c.notes ? `<p class="text-[11px] text-slate-500 mt-1.5 line-clamp-2 italic">"${escapeHTML(c.notes)}"</p>` : ''}
+            </td>
+            <td class="py-3.5 px-4 max-w-[270px]">
+              <div class="font-semibold text-slate-800 text-xs">${escapeHTML(c.contact || '—')}</div>
+              ${c.role ? `<div class="text-[11px] text-slate-500 mb-1.5">${escapeHTML(c.role)}</div>` : ''}
+              
+              <!-- Client Phone Number -->
+              ${c.phone ? `
+                <div class="flex items-center gap-1.5 text-xs text-slate-700 font-medium mb-1.5 bg-emerald-50/60 px-2 py-1 rounded-lg border border-emerald-200/50">
+                  <i class="fa-solid fa-phone text-emerald-600 text-[10px]"></i>
+                  <a href="tel:${escapeHTML(c.phone)}" class="hover:underline text-mawasem-dark">${escapeHTML(c.phone)}</a>
+                </div>
+              ` : ''}
+
+              <!-- Website / LinkedIn Link -->
+              ${c.contactInfo ? `
+                <div class="flex items-center gap-1.5 text-xs text-slate-600 mb-2 truncate">
+                  <i class="fa-solid fa-globe text-mawasem-primary text-[10px]"></i>
+                  <a href="${escapeHTML(c.contactInfo.startsWith('http') ? c.contactInfo : 'https://' + c.contactInfo)}" target="_blank" class="text-mawasem-primary hover:underline truncate" title="${escapeHTML(c.contactInfo)}">${escapeHTML(c.contactInfo)}</a>
+                </div>
+              ` : ''}
+
+              ${emails.length > 0 ? `
+                <div class="space-y-1.5 mt-1">
+                  ${emails.map((em, idx) => `
+                    <div class="flex items-center justify-between gap-1.5 px-2 py-1 rounded-lg ${idx === 0 ? 'bg-emerald-50/90 border border-emerald-200/80' : 'bg-slate-50 border border-slate-200/70'}">
+                      <div class="min-w-0 flex-1">
+                        <div class="flex items-center gap-1">
+                          <span class="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.2 rounded ${idx === 0 ? 'bg-mawasem-primary text-white' : 'bg-slate-200 text-slate-700'}">
+                            ${idx === 0 ? 'Primary' : `Alt ${idx}`}
+                          </span>
+                          ${em.label && em.label !== 'Primary' && em.label !== `Alt ${idx}` ? `<span class="text-[10px] text-slate-500 truncate">${escapeHTML(em.label)}</span>` : ''}
+                        </div>
+                        <a href="mailto:${escapeHTML(em.address)}" class="block text-xs text-mawasem-dark hover:text-mawasem-primary hover:underline font-medium truncate mt-0.5" title="${escapeHTML(em.address)}">${escapeHTML(em.address)}</a>
+                      </div>
+                      <button onclick="copyText('${escapeHTML(em.address)}', 'Copied ${escapeHTML(em.address)}')" class="text-slate-400 hover:text-mawasem-dark p-1 shrink-0 cursor-pointer" title="Copy this email">
+                        <i class="fa-regular fa-copy text-xs"></i>
+                      </button>
+                    </div>
+                  `).join('')}
+                  
+                  ${emails.length > 1 ? `
+                    <div class="flex items-center justify-between pt-0.5">
+                      <button onclick="copyText('${escapeHTML(allEmailsStr)}', 'Copied all ${emails.length} emails!')" class="text-[11px] font-semibold text-mawasem-primary hover:underline flex items-center gap-1 cursor-pointer">
+                        <i class="fa-solid fa-copy text-[10px]"></i> Copy All (${emails.length})
+                      </button>
+                      <button onclick="openCompanyModal('${c.id}')" class="text-[11px] text-slate-500 hover:text-mawasem-dark cursor-pointer">+ Add Alt</button>
+                    </div>
+                  ` : `
+                    <button onclick="openCompanyModal('${c.id}')" class="text-[11px] text-mawasem-primary hover:underline font-medium inline-flex items-center gap-1 cursor-pointer">
+                      <i class="fa-solid fa-plus text-[9px]"></i> Add Alternative Email
+                    </button>
+                  `}
+                </div>
+              ` : `
+                <button onclick="openCompanyModal('${c.id}')" class="mt-1 text-[11px] text-mawasem-primary hover:underline font-medium inline-flex items-center gap-1 cursor-pointer">
+                  <i class="fa-solid fa-plus text-[9px]"></i> Add Email(s)
+                </button>
+              `}
+            </td>
+            <td class="py-3.5 px-4 max-w-[200px]">
+              ${c.products ? `<div class="flex flex-wrap gap-1">${c.products.split(',').map(p => `<span class="inline-block bg-mawasem-mint/70 text-mawasem-dark text-[11px] font-medium px-2 py-0.5 rounded-md">${escapeHTML(p.trim())}</span>`).join('')}</div>` : '<span class="text-xs text-slate-400">Not specified</span>'}
+            </td>
+            <td class="py-3.5 px-4">
+              <select onchange="quickChangeCompanyStatus('${c.id}', this.value)" class="text-xs font-semibold px-2.5 py-1 rounded-lg border cursor-pointer focus:outline-none ${statusStyle.badge}">
+                ${PIPELINE_STAGES.map(st => `<option value="${escapeHTML(st)}" ${c.status === st ? 'selected' : ''}>${escapeHTML(st)}</option>`).join('')}
+              </select>
+              <div class="mt-1.5">${renderPriorityBadge(c.priority)}</div>
+            </td>
+            <td class="py-3.5 px-4 max-w-[210px]">
+              <div class="flex items-center gap-1.5">${renderFlagBadge(flag)}${c.nextFollowUp ? `<span class="text-xs font-medium text-slate-700">${escapeHTML(c.nextFollowUp)}</span>` : ''}</div>
+              ${c.nextAction ? `<div class="text-xs text-slate-700 font-medium mt-1">${escapeHTML(c.nextAction)}</div>` : ''}
+            </td>
+            <td class="py-3.5 px-4 text-right whitespace-nowrap">
+              <div class="inline-flex items-center gap-1">
+                <button onclick="logContactToday('${c.id}')" class="p-2 rounded-lg text-emerald-600 hover:bg-emerald-50 transition cursor-pointer" title="Contacted Today"><i class="fa-solid fa-paper-plane text-xs"></i></button>
+                <button onclick="openTaskModal(null, '${escapeHTML(c.name)}')" class="p-2 rounded-lg text-sky-600 hover:bg-sky-50 transition cursor-pointer" title="Add Task"><i class="fa-solid fa-plus-circle text-xs"></i></button>
+                <button onclick="openCompanyModal('${c.id}')" class="p-2 rounded-lg text-slate-600 hover:bg-slate-100 transition cursor-pointer" title="Edit / Add Alt Emails"><i class="fa-solid fa-pen text-xs"></i></button>
+                <button onclick="confirmDeleteCompany('${c.id}')" class="p-2 rounded-lg text-rose-500 hover:bg-rose-50 transition cursor-pointer" title="Delete"><i class="fa-solid fa-trash text-xs"></i></button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function filterTableByCountry(ctry) { resetPipelineFilters(); document.getElementById('filterCountry').value = ctry; switchTab('table'); renderPipelineTable(); }
+    function filterTableByStatus(status) { resetPipelineFilters(); document.getElementById('filterStatus').value = status; switchTab('table'); renderPipelineTable(); }
+    function filterTableByFlag(flag) { resetPipelineFilters(); document.getElementById('filterFlag').value = flag; switchTab('table'); renderPipelineTable(); }
+    function filterTableByRep(rep) { setTeamScope('all'); resetPipelineFilters(); document.getElementById('filterRep').value = rep; switchTab('table'); renderPipelineTable(); }
+
+    function resetPipelineFilters() {
+      document.getElementById('pipelineSearch').value = '';
+      document.getElementById('filterRep').value = '';
+      document.getElementById('filterCountry').value = '';
+      document.getElementById('filterStatus').value = '';
+      document.getElementById('filterPriority').value = '';
+      document.getElementById('filterFlag').value = '';
+      renderPipelineTable();
+    }
+
+    function renderKanban() {
+      const search = document.getElementById('kanbanSearch').value.toLowerCase().trim();
+      const board = document.getElementById('kanbanBoard');
+      const scopedComps = getScopedCompanies();
+
+      board.innerHTML = PIPELINE_STAGES.map(stage => {
+        const stageCompanies = scopedComps.filter(c => {
+          const emails = getCompanyEmails(c).map(e => e.address).join(' ');
+          return c.status === stage && (!search || [c.name, c.country, c.contact, c.phone, c.products, emails, c.contactInfo].some(f => (f || '').toLowerCase().includes(search)));
+        });
+        const style = getStatusStyle(stage);
+
+        return `
+          <div class="w-72 shrink-0 bg-slate-100/90 rounded-2xl border border-slate-200/90 ${style.header} flex flex-col kanban-col transition" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, '${escapeHTML(stage)}')">
+            <div class="p-3.5 flex items-center justify-between border-b border-slate-200/70">
+              <h3 class="font-bold text-xs text-slate-800 truncate pr-2">${escapeHTML(stage)}</h3>
+              <span class="bg-white text-slate-700 font-bold text-xs px-2 py-0.5 rounded-full shadow-2xs">${stageCompanies.length}</span>
+            </div>
+            <div class="p-2.5 space-y-2.5 flex-1">
+              ${stageCompanies.length === 0 ? `<div class="text-center py-8 text-xs text-slate-400 border-2 border-dashed border-slate-200 rounded-xl">Drop company here</div>` : ''}
+              ${stageCompanies.map(c => {
+                const emails = getCompanyEmails(c);
+                const allEmailsStr = emails.map(e => e.address).join(', ');
+                return `
+                <div draggable="true" ondragstart="handleDragStart(event, '${c.id}')" ondragend="handleDragEnd(event)" class="bg-white p-3.5 rounded-xl border border-slate-200/90 shadow-2xs hover:shadow-md transition cursor-grab space-y-2">
+                  <div class="flex items-start justify-between gap-2">
+                    <div>
+                      <div class="font-bold text-sm text-slate-800 leading-tight">${escapeHTML(c.name)}</div>
+                      <div class="text-[11px] text-slate-500 mt-0.5">${escapeHTML(c.country)}</div>
+                    </div>
+                    ${renderPriorityBadge(c.priority)}
+                  </div>
+                  ${c.phone ? `<div class="text-[11px] text-slate-700"><i class="fa-solid fa-phone text-emerald-600 mr-1"></i>${escapeHTML(c.phone)}</div>` : ''}
+                  ${emails.length > 0 ? `
+                    <div class="flex items-center justify-between text-[11px] bg-slate-50 px-2 py-1 rounded-lg border border-slate-200/70">
+                      <span class="truncate text-slate-600 max-w-[165px]" title="${escapeHTML(allEmailsStr)}"><i class="fa-regular fa-envelope text-mawasem-primary mr-1"></i>${escapeHTML(emails[0].address)}</span>
+                      ${emails.length > 1 ? `<span class="font-bold text-[10px] bg-emerald-100 text-mawasem-dark px-1.5 rounded">+${emails.length - 1}</span>` : ''}
+                    </div>
+                  ` : ''}
+                  ${c.products ? `<div class="text-[11px] text-mawasem-dark bg-mawasem-mint/50 px-2 py-1 rounded-lg truncate"><i class="fa-solid fa-leaf text-[10px] mr-1"></i>${escapeHTML(c.products)}</div>` : ''}
+                  <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+                    ${renderFlagBadge(calculateFlag(c.nextFollowUp, c.status === 'Won'))}
+                    <div class="flex items-center gap-1">
+                      ${emails.length > 0 ? `<button onclick="copyText('${escapeHTML(allEmailsStr)}', 'Copied ${emails.length} email(s)!')" class="p-1.5 text-slate-400 hover:text-mawasem-primary cursor-pointer" title="Copy All Emails"><i class="fa-regular fa-copy text-xs"></i></button>` : ''}
+                      <button onclick="openCompanyModal('${c.id}')" class="p-1.5 text-slate-400 hover:text-slate-700 cursor-pointer" title="Edit"><i class="fa-solid fa-pen text-xs"></i></button>
+                    </div>
+                  </div>
+                </div>
+              `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function handleDragStart(e, id) { draggedCompanyId = id; e.currentTarget.classList.add('dragging'); }
+    function handleDragEnd(e) { e.currentTarget.classList.remove('dragging'); document.querySelectorAll('.kanban-col').forEach(c => c.classList.remove('drag-over')); }
+    function handleDragOver(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+    function handleDragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+    function handleDrop(e, stage) { e.preventDefault(); e.currentTarget.classList.remove('drag-over'); if (draggedCompanyId) { quickChangeCompanyStatus(draggedCompanyId, stage); draggedCompanyId = null; } }
+
+    function renderTasks() {
+      const search = document.getElementById('taskSearch').value.toLowerCase().trim();
+      const compFilter = document.getElementById('taskFilterCompany').value;
+      const statusFilter = document.getElementById('taskFilterStatus').value;
+      const flagFilter = document.getElementById('taskFilterFlag').value;
+
+      const filtered = getScopedTasks().filter(t => {
+        const flag = calculateFlag(t.dueDate, t.status === 'Done');
+        const matchesSearch = !search || [t.company, t.title, t.notes].some(f => (f || '').toLowerCase().includes(search));
+        const matchesComp = !compFilter || t.company === compFilter;
+        const matchesStatus = !statusFilter || t.status === statusFilter;
+        const matchesFlag = !flagFilter || flag === flagFilter;
+        return matchesSearch && matchesComp && matchesStatus && matchesFlag;
+      });
+
+      const container = document.getElementById('tasksListContainer');
+      const emptyState = document.getElementById('tasksEmptyState');
+
+      if (filtered.length === 0) {
+        container.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      container.innerHTML = filtered.map(t => {
+        const isDone = t.status === 'Done';
+        return `
+          <div class="p-4 hover:bg-mawasem-sand/60 transition flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${isDone ? 'opacity-60 bg-slate-50/50' : ''}">
+            <div class="flex items-start gap-3.5">
+              <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleTaskDone('${t.id}')" class="mt-1 w-4 h-4 rounded text-mawasem-primary focus:ring-mawasem-primary cursor-pointer" />
+              <div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="text-xs font-bold text-mawasem-primary bg-mawasem-mint/60 px-2 py-0.5 rounded-md">${escapeHTML(t.company)}</span>
+                  ${renderFlagBadge(calculateFlag(t.dueDate, isDone))}
+                  ${renderPriorityBadge(t.priority)}
+                </div>
+                <p class="text-sm font-medium text-slate-800 mt-1.5 ${isDone ? 'line-through text-slate-500' : ''}">${escapeHTML(t.title)}</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 self-end sm:self-center shrink-0">
+              <select onchange="quickChangeTaskStatus('${t.id}', this.value)" class="text-xs font-medium px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white cursor-pointer focus:outline-none">
+                <option value="To Do" ${t.status === 'To Do' ? 'selected' : ''}>To Do</option>
+                <option value="In Progress" ${t.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                <option value="Done" ${t.status === 'Done' ? 'selected' : ''}>Done</option>
+              </select>
+              <button onclick="openTaskModal('${t.id}')" class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 cursor-pointer"><i class="fa-solid fa-pen text-xs"></i></button>
+              <button onclick="confirmDeleteTask('${t.id}')" class="p-2 rounded-lg text-rose-500 hover:bg-rose-50 cursor-pointer"><i class="fa-solid fa-trash text-xs"></i></button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function resetTaskFilters() {
+      document.getElementById('taskSearch').value = '';
+      document.getElementById('taskFilterCompany').value = '';
+      document.getElementById('taskFilterStatus').value = '';
+      document.getElementById('taskFilterFlag').value = '';
+      renderTasks();
+    }
+
+    // ==================== CALENDAR VIEW LOGIC ====================
+    const arabicMonths = [
+      'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+      'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
+    ];
+
+    function changeMonth(delta) {
+      currentCalDate.setMonth(currentCalDate.getMonth() + delta);
+      renderCalendar();
+    }
+
+    function goToToday() {
+      currentCalDate = new Date();
+      selectedDateStr = referenceDate;
+      renderCalendar();
+    }
+
+    function selectCalendarDay(dateStr) {
+      selectedDateStr = dateStr;
+      renderCalendar();
+    }
+
+    function renderCalendar() {
+      const year = currentCalDate.getFullYear();
+      const month = currentCalDate.getMonth();
+      const titleEl = document.getElementById('calendar-month-title');
+      if (titleEl) titleEl.textContent = `${arabicMonths[month]} ${year}`;
+
+      const firstDayOfMonth = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      const grid = document.getElementById('calendar-grid');
+      if (!grid) return;
+      let html = '';
+
+      for (let i = 0; i < firstDayOfMonth; i++) {
+        html += `<div class="bg-slate-50/50 rounded-xl min-h-[105px]"></div>`;
+      }
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const mStr = String(month + 1).padStart(2, '0');
+        const dStr = String(day).padStart(2, '0');
+        const fullDate = `${year}-${mStr}-${dStr}`;
+
+        const dayTasks = tasks.filter(t => t.dueDate === fullDate || t.date === fullDate);
+        const dayComps = companies.filter(c => c.nextFollowUp === fullDate);
+        const isToday = fullDate === referenceDate;
+        const isSelected = fullDate === selectedDateStr;
+
+        const borderClass = isSelected
+          ? 'border-2 border-emerald-600 bg-emerald-50/40 shadow-sm'
+          : isToday
+          ? 'border-2 border-amber-400 bg-amber-50/20'
+          : 'border border-slate-200/80 bg-white';
+
+        const badgesHtml = dayTasks.slice(0, 2).map(t => {
+          const color = t.status === 'Done'
+            ? 'bg-slate-200 text-slate-500 line-through'
+            : t.priority === 'High'
+            ? 'bg-rose-100 text-rose-800'
+            : 'bg-emerald-100 text-emerald-900';
+          return `<div class="text-[10px] font-bold px-1.5 py-0.5 rounded truncate ${color}">${escapeHTML(t.title)}</div>`;
+        }).join('');
+
+        const compsHtml = dayComps.slice(0, 1).map(c => `
+          <div class="text-[10px] font-bold px-1.5 py-0.5 rounded truncate bg-amber-100 text-amber-900">Follow-up: ${escapeHTML(c.name)}</div>
+        `).join('');
+
+        const totalCount = dayTasks.length + dayComps.length;
+
+        html += `
+          <div onclick="selectCalendarDay('${fullDate}')" class="calendar-day rounded-xl p-2 cursor-pointer flex flex-col justify-between ${borderClass}">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-extrabold ${isToday ? 'bg-amber-500 text-white w-6 h-6 rounded-full flex items-center justify-center' : 'text-slate-700'}">${day}</span>
+              ${totalCount > 0 ? `<span class="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-1.5 rounded-full">${totalCount}</span>` : ''}
+            </div>
+            <div class="space-y-1 mt-1.5">
+              ${badgesHtml}
+              ${compsHtml}
+            </div>
+          </div>
+        `;
+      }
+
+      grid.innerHTML = html;
+      renderSelectedDayAgenda();
+    }
+
+    function renderSelectedDayAgenda() {
+      const labelEl = document.getElementById('selected-date-label');
+      if (labelEl) labelEl.textContent = selectedDateStr;
+      
+      const dayTasks = tasks.filter(t => t.dueDate === selectedDateStr || t.date === selectedDateStr);
+      const dayComps = companies.filter(c => c.nextFollowUp === selectedDateStr);
+      const container = document.getElementById('selected-day-tasks');
+      if (!container) return;
+
+      if (dayTasks.length === 0 && dayComps.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-10 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+            <i class="fa-regular fa-calendar-check text-3xl text-slate-300 mb-2"></i>
+            <p class="text-xs font-bold text-slate-500">لا توجد مهام أو متابعات مسجلة في هذا اليوم</p>
+            <button type="button" onclick="openTaskModalForSelectedDate()" class="mt-3 text-xs bg-emerald-700 text-white font-bold px-3.5 py-1.5 rounded-lg hover:bg-emerald-600 cursor-pointer">
+              + أضف مهمة لهذا اليوم
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      let html = '';
+      dayComps.forEach(c => {
+        html += `
+          <div class="p-3.5 rounded-xl bg-amber-50 border border-amber-200 border-r-4 border-r-amber-500 flex items-start justify-between gap-2">
+            <div>
+              <span class="text-[10px] font-extrabold uppercase bg-amber-200 text-amber-900 px-1.5 py-0.5 rounded">Company Follow-up</span>
+              <p class="text-sm font-bold text-slate-800 mt-1">${escapeHTML(c.name)} (${escapeHTML(c.country)})</p>
+              <p class="text-xs text-slate-600 mt-0.5">Next Action: ${escapeHTML(c.nextAction || 'Follow up')}</p>
+            </div>
+            <button onclick="openCompanyModal('${c.id}')" class="text-xs text-amber-800 hover:underline"><i class="fa-solid fa-pen"></i></button>
+          </div>
+        `;
+      });
+
+      dayTasks.forEach(t => {
+        const isDone = t.status === 'Done';
+        const badgeColor = t.priority === 'High' ? 'border-r-4 border-r-rose-500' : 'border-r-4 border-r-emerald-600';
+        html += `
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 ${badgeColor} flex items-start justify-between gap-2 ${isDone ? 'opacity-60 bg-slate-100' : ''}">
+            <div class="flex items-start gap-2.5">
+              <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleTaskDone('${t.id}')" class="mt-1 w-4 h-4 accent-emerald-600 cursor-pointer" />
+              <div>
+                <p class="text-sm font-bold ${isDone ? 'line-through text-slate-400' : 'text-slate-800'}">${escapeHTML(t.title)}</p>
+                ${t.company ? `<span class="inline-block mt-1 text-[11px] font-bold text-emerald-700 bg-emerald-100/70 px-2 py-0.5 rounded"><i class="fa-solid fa-building ml-1"></i>${escapeHTML(t.company)}</span>` : ''}
+              </div>
+            </div>
+            <div class="flex items-center gap-1">
+              <button type="button" onclick="openTaskModal('${t.id}')" class="text-slate-400 hover:text-slate-700 text-xs p-1"><i class="fa-solid fa-pen"></i></button>
+              <button type="button" onclick="confirmDeleteTask('${t.id}')" class="text-slate-400 hover:text-rose-600 text-xs p-1"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function openTaskModalForSelectedDate() {
+      openTaskModal(null, '');
+      document.getElementById('taskDueDate').value = selectedDateStr;
+    }
+
+    function renderProductQuickTags() {
+      document.getElementById('quickProductTags').innerHTML = MAWASEM_PRODUCTS.map(prod => `
+        <button type="button" onclick="appendProductTag('${prod}')" class="text-[11px] font-medium px-2.5 py-1 rounded-lg bg-mawasem-mint/65 hover:bg-mawasem-primary hover:text-white text-mawasem-dark transition cursor-pointer">+ ${prod}</button>
+      `).join('');
+    }
+
+    function appendProductTag(prod) {
+      const input = document.getElementById('compProducts');
+      const existing = input.value.split(',').map(s => s.trim()).filter(Boolean);
+      if (!existing.some(e => e.toLowerCase() === prod.toLowerCase())) {
+        existing.push(prod);
+        input.value = existing.join(', ');
+      }
+    }
+
+    function addEmailInputRow(address = '', label = '') {
+      const container = document.getElementById('emailRowsContainer');
+      const rowIndex = container.children.length;
+      const defaultLabel = label || (rowIndex === 0 ? 'Primary' : `Alt ${rowIndex}`);
+
+      const row = document.createElement('div');
+      row.className = 'email-row flex flex-col sm:flex-row items-stretch sm:items-center gap-2 bg-white p-2 rounded-xl border border-slate-200 shadow-2xs';
+      row.innerHTML = `
+        <div class="sm:w-44 shrink-0">
+          <input type="text" class="email-label-input w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 focus:outline-none focus:border-mawasem-primary" placeholder="Role / Label (e.g. GM)" value="${escapeHTML(defaultLabel)}" />
+        </div>
+        <div class="flex-1">
+          <input type="email" class="email-address-input w-full px-3 py-1.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-mawasem-primary/30 focus:border-mawasem-primary" placeholder="buyer@company.com" value="${escapeHTML(address)}" />
+        </div>
+        <button type="button" onclick="removeEmailInputRow(this)" class="px-2.5 py-1.5 rounded-lg text-rose-500 hover:bg-rose-50 text-xs font-medium transition self-end sm:self-center cursor-pointer" title="Remove Email">
+          <i class="fa-solid fa-trash-can"></i>
+        </button>
+      `;
+      container.appendChild(row);
+    }
+
+    function removeEmailInputRow(btn) {
+      const container = document.getElementById('emailRowsContainer');
+      if (container.children.length <= 1) {
+        const inputs = container.querySelectorAll('input');
+        inputs.forEach(inp => inp.value = '');
+        return;
+      }
+      btn.closest('.email-row').remove();
+    }
+
+    function openCompanyModal(id = null) {
+      const form = document.getElementById('companyForm');
+      form.reset();
+      const emailContainer = document.getElementById('emailRowsContainer');
+      emailContainer.innerHTML = '';
+
+      if (id) {
+        const comp = companies.find(c => c.id === id);
+        if (!comp) return;
+        document.getElementById('companyModalTitle').textContent = `Edit Company: ${comp.name}`;
+        document.getElementById('compId').value = comp.id;
+        document.getElementById('compName').value = comp.name || '';
+        document.getElementById('compCountry').value = comp.country || '';
+        document.getElementById('compContact').value = comp.contact || '';
+        document.getElementById('compRole').value = comp.role || '';
+        document.getElementById('compPhone').value = comp.phone || '';
+        document.getElementById('compContactInfo').value = comp.contactInfo || '';
+        document.getElementById('compStatus').value = comp.status || 'To Research';
+        document.getElementById('compPriority').value = comp.priority || 'Medium';
+        document.getElementById('compSource').value = comp.source || '';
+        document.getElementById('compAssignedTo').value = comp.assignedTo || currentSalesRep;
+        document.getElementById('compProducts').value = comp.products || '';
+        document.getElementById('compLastContact').value = comp.lastContact || '';
+        document.getElementById('compNextFollowUp').value = comp.nextFollowUp || '';
+        document.getElementById('compNextAction').value = comp.nextAction || '';
+        document.getElementById('compNotes').value = comp.notes || '';
+
+        const emails = getCompanyEmails(comp);
+        if (emails.length > 0) {
+          emails.forEach(em => addEmailInputRow(em.address, em.label));
+        } else {
+          addEmailInputRow('', 'Primary');
+        }
+      } else {
+        document.getElementById('companyModalTitle').textContent = 'Add New Export Company';
+        document.getElementById('compId').value = '';
+        document.getElementById('compStatus').value = 'Ready to Contact';
+        document.getElementById('compPriority').value = 'Medium';
+        document.getElementById('compAssignedTo').value = currentSalesRep;
+        addEmailInputRow('', 'Primary');
+      }
+      document.getElementById('companyModal').classList.remove('hidden');
+    }
+
+    function closeCompanyModal() { document.getElementById('companyModal').classList.add('hidden'); }
+
+    function saveCompany(e) {
+      e.preventDefault();
+      const id = document.getElementById('compId').value;
+
+      const emailRows = document.querySelectorAll('#emailRowsContainer .email-row');
+      const emailsList = [];
+      emailRows.forEach((row, idx) => {
+        const address = row.querySelector('.email-address-input').value.trim();
+        const label = row.querySelector('.email-label-input').value.trim() || (idx === 0 ? 'Primary' : `Alt ${idx}`);
+        if (address) {
+          emailsList.push({ address, label });
+        }
+      });
+
+      const payload = {
+        id: id || 'comp-' + Date.now(),
+        name: document.getElementById('compName').value.trim(),
+        country: document.getElementById('compCountry').value.trim(),
+        contact: document.getElementById('compContact').value.trim(),
+        role: document.getElementById('compRole').value.trim(),
+        phone: document.getElementById('compPhone').value.trim(),
+        email: emailsList.map(e => e.address).join(', '),
+        emailsList: emailsList,
+        contactInfo: document.getElementById('compContactInfo').value.trim(),
+        status: document.getElementById('compStatus').value,
+        priority: document.getElementById('compPriority').value,
+        source: document.getElementById('compSource').value.trim(),
+        assignedTo: document.getElementById('compAssignedTo').value.trim() || currentSalesRep,
+        updatedBy: currentSalesRep,
+        products: document.getElementById('compProducts').value.trim(),
+        lastContact: document.getElementById('compLastContact').value,
+        nextFollowUp: document.getElementById('compNextFollowUp').value,
+        nextAction: document.getElementById('compNextAction').value.trim(),
+        notes: document.getElementById('compNotes').value.trim()
+      };
+      closeCompanyModal();
+      persistCompanyToCloud(payload);
+      showToast(id ? `Updated ${payload.name} (${emailsList.length} email(s))` : `Added ${payload.name}!`, 'success');
+    }
+
+    function quickChangeCompanyStatus(id, newStatus) {
+      const comp = companies.find(c => c.id === id);
+      if (comp) {
+        persistCompanyToCloud({ ...comp, status: newStatus, updatedBy: currentSalesRep });
+        showToast(`${comp.name} moved to "${newStatus}"`, 'info');
+      }
+    }
+
+    function logContactToday(id) {
+      const comp = companies.find(c => c.id === id);
+      if (!comp) return;
+      const dt = new Date(referenceDate + 'T00:00:00');
+      dt.setDate(dt.getDate() + 3);
+      const nextDate = dt.toISOString().split('T')[0];
+      const newStatus = (comp.status === 'Ready to Contact' || comp.status === 'To Research') ? 'Contacted - Waiting Reply' : comp.status;
+      persistCompanyToCloud({ ...comp, lastContact: referenceDate, nextFollowUp: nextDate, status: newStatus, updatedBy: currentSalesRep });
+      showToast(`Logged contact for ${comp.name}`, 'success');
+    }
+
+    function confirmDeleteCompany(id) {
+      const comp = companies.find(c => c.id === id);
+      if (!comp) return;
+      openConfirmModal('Delete Company', `Are you sure you want to remove "${comp.name}"?`, () => {
+        removeCompanyFromCloud(id);
+        showToast(`Removed ${comp.name}`, 'info');
+      });
+    }
+
+    function openTaskModal(id = null, presetCompany = '') {
+      const form = document.getElementById('taskForm');
+      form.reset();
+      if (id) {
+        const task = tasks.find(t => t.id === id);
+        if (!task) return;
+        document.getElementById('taskModalTitle').textContent = 'Edit Task';
+        document.getElementById('taskId').value = task.id;
+        document.getElementById('taskCompany').value = task.company || '';
+        document.getElementById('taskTitle').value = task.title || '';
+        document.getElementById('taskDueDate').value = task.dueDate || task.date || '';
+        document.getElementById('taskAssignedTo').value = task.assignedTo || currentSalesRep;
+        document.getElementById('taskPriority').value = task.priority || 'Medium';
+        document.getElementById('taskStatus').value = task.status || 'To Do';
+        document.getElementById('taskNotes').value = task.notes || '';
+      } else {
+        document.getElementById('taskModalTitle').textContent = 'Add New Follow-up Task';
+        document.getElementById('taskId').value = '';
+        document.getElementById('taskCompany').value = presetCompany;
+        document.getElementById('taskDueDate').value = selectedDateStr || referenceDate;
+        document.getElementById('taskAssignedTo').value = currentSalesRep;
+        document.getElementById('taskPriority').value = 'Medium';
+        document.getElementById('taskStatus').value = 'To Do';
+      }
+      document.getElementById('taskModal').classList.remove('hidden');
+    }
+
+    function closeTaskModal() { document.getElementById('taskModal').classList.add('hidden'); }
+
+    function saveTask(e) {
+      e.preventDefault();
+      const id = document.getElementById('taskId').value;
+      const dueDateVal = document.getElementById('taskDueDate').value;
+      const payload = {
+        id: id || 'task-' + Date.now(),
+        company: document.getElementById('taskCompany').value.trim(),
+        title: document.getElementById('taskTitle').value.trim(),
+        dueDate: dueDateVal,
+        date: dueDateVal,
+        assignedTo: document.getElementById('taskAssignedTo').value.trim() || currentSalesRep,
+        priority: document.getElementById('taskPriority').value,
+        status: document.getElementById('taskStatus').value,
+        notes: document.getElementById('taskNotes').value.trim()
+      };
+      closeTaskModal();
+      persistTaskToCloud(payload);
+      showToast(id ? 'Task updated' : 'Task added successfully', 'success');
+    }
+
+    function toggleTaskDone(id) {
+      const task = tasks.find(t => t.id === id);
+      if (!task) return;
+      persistTaskToCloud({ ...task, status: task.status === 'Done' ? 'To Do' : 'Done' });
+      showToast('Task status updated', 'info');
+    }
+
+    function quickChangeTaskStatus(id, newStatus) {
+      const task = tasks.find(t => t.id === id);
+      if (task) persistTaskToCloud({ ...task, status: newStatus });
+    }
+
+    function confirmDeleteTask(id) {
+      openConfirmModal('Delete Task', 'Are you sure you want to delete this task?', () => {
+        removeTaskFromCloud(id);
+        showToast('Task deleted', 'info');
+      });
+    }
+
+    // ==================== BRANDED EXCEL EXPORT WITH LOGO ====================
+    function generateMawasemLogoBase64() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 360;
+      canvas.height = 95;
+      const ctx = canvas.getContext('2d');
+
+      ctx.fillStyle = '#1B4332';
+      ctx.beginPath();
+      ctx.roundRect(0, 0, 360, 95, 16);
+      ctx.fill();
+
+      ctx.strokeStyle = '#D4A373';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.roundRect(4, 4, 352, 87, 13);
+      ctx.stroke();
+
+      ctx.fillStyle = '#2D6A4F';
+      ctx.beginPath();
+      ctx.arc(50, 47, 28, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#E9C46A';
+      ctx.beginPath();
+      ctx.moveTo(50, 26);
+      ctx.quadraticCurveTo(70, 42, 50, 68);
+      ctx.quadraticCurveTo(30, 42, 50, 26);
+      ctx.fill();
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 28px Arial, sans-serif';
+      ctx.fillText('MAWASEM', 92, 46);
+
+      ctx.fillStyle = '#D4A373';
+      ctx.font = 'bold 13px Arial, sans-serif';
+      ctx.fillText('AGRICULTURAL CROPS • EXPORT', 93, 68);
+
+      return canvas.toDataURL('image/png');
+    }
+
+    async function exportStyledExcel() {
+      if (typeof ExcelJS === 'undefined') {
+        alert('جاري تحميل مكتبة الإكسل، تأكد من اتصالك بالإنترنت وحاول مرة أخرى.');
+        return;
+      }
+
+      const btn = document.getElementById('exportExcelBtn');
+      const originalHtml = btn.innerHTML;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>جاري تجهيز الشيت...</span>`;
+      btn.disabled = true;
+
+      try {
+        const workbook = new ExcelJS.Workbook();
+        workbook.creator = 'Mawasem Agricultural Crops';
+        workbook.created = new Date();
+
+        const logoBase64 = generateMawasemLogoBase64();
+        const logoId = workbook.addImage({
+          base64: logoBase64,
+          extension: 'png',
+        });
+
+        const ws = workbook.addWorksheet('Export Pipeline', {
+          views: [{ showGridLines: true }]
+        });
+
+        ws.columns = [
+          { key: 'company', width: 26 },
+          { key: 'country', width: 16 },
+          { key: 'contact', width: 22 },
+          { key: 'phone', width: 20 },
+          { key: 'emails', width: 32 },
+          { key: 'website', width: 30 },
+          { key: 'products', width: 34 },
+          { key: 'status', width: 22 },
+          { key: 'priority', width: 14 },
+          { key: 'followup', width: 16 },
+          { key: 'action', width: 30 },
+          { key: 'notes', width: 36 }
+        ];
+
+        ws.getRow(1).height = 28;
+        ws.getRow(2).height = 28;
+        ws.getRow(3).height = 24;
+        ws.getRow(4).height = 12;
+
+        ws.addImage(logoId, {
+          tl: { col: 0.1, row: 0.15 },
+          ext: { width: 240, height: 64 }
+        });
+
+        ws.mergeCells('C1:L1');
+        const titleCell = ws.getCell('C1');
+        titleCell.value = 'MAWASEM AGRICULTURAL CROPS — B2B EXPORT SALES REPORT';
+        titleCell.font = { name: 'Calibri', size: 15, bold: true, color: { argb: 'FF1B4332' } };
+        titleCell.alignment = { vertical: 'middle', horizontal: 'left' };
+
+        ws.mergeCells('C2:L2');
+        const subTitleCell = ws.getCell('C2');
+        subTitleCell.value = `Report Date: ${referenceDate}   |   Sales Rep: ${currentSalesRep}   |   Total Leads: ${companies.length}`;
+        subTitleCell.font = { name: 'Calibri', size: 11, bold: true, color: { argb: 'FF52796F' } };
+        subTitleCell.alignment = { vertical: 'middle', horizontal: 'left' };
+
+        const headerRowIndex = 5;
+        const headers = [
+          'Company Name',
+          'Country',
+          'Contact Person',
+          'Client Phone',
+          'Email Addresses',
+          'Website / LinkedIn',
+          'Products of Interest',
+          'Pipeline Status',
+          'Priority',
+          'Next Follow-up',
+          'Next Action',
+          'Notes & Remarks'
+        ];
+
+        const headerRow = ws.getRow(headerRowIndex);
+        headerRow.height = 30;
+        headers.forEach((h, idx) => {
+          const cell = headerRow.getCell(idx + 1);
+          cell.value = h;
+          cell.font = { name: 'Calibri', size: 11, bold: true, color: { argb: 'FFFFFFFF' } };
+          cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1B4332' } };
+          cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+          cell.border = {
+            top: { style: 'medium', color: { argb: 'FFD4A373' } },
+            bottom: { style: 'medium', color: { argb: 'FFD4A373' } },
+            left: { style: 'thin', color: { argb: 'FF2D6A4F' } },
+            right: { style: 'thin', color: { argb: 'FF2D6A4F' } }
+          };
+        });
+
+        companies.forEach((c, index) => {
+          const rIdx = headerRowIndex + 1 + index;
+          const row = ws.getRow(rIdx);
+          row.height = 26;
+
+          const emails = getCompanyEmails(c).map(e => e.address).join(', ');
+          const rowValues = [
+            c.name,
+            c.country,
+            c.contact || '-',
+            c.phone || '-',
+            emails || c.email || '-',
+            c.contactInfo || '-',
+            c.products || '-',
+            c.status,
+            c.priority || 'Medium',
+            c.nextFollowUp || '-',
+            c.nextAction || '-',
+            c.notes || '-'
+          ];
+
+          const isEven = index % 2 === 1;
+          const rowBg = isEven ? 'FFF8FAFC' : 'FFFFFFFF';
+
+          rowValues.forEach((val, colIdx) => {
+            const cell = row.getCell(colIdx + 1);
+            cell.value = val;
+            cell.font = { name: 'Calibri', size: 10.5, bold: colIdx === 0, color: { argb: 'FF1E293B' } };
+            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: rowBg } };
+            cell.alignment = { vertical: 'middle', horizontal: colIdx === 1 || colIdx === 8 || colIdx === 9 ? 'center' : 'left', wrapText: true };
+            cell.border = {
+              top: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+              bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+              left: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+              right: { style: 'thin', color: { argb: 'FFE2E8F0' } }
+            };
+          });
+        });
+
+        const wsTasks = workbook.addWorksheet('Tasks & Follow-ups');
+        wsTasks.columns = [
+          { key: 'company', width: 28 },
+          { key: 'title', width: 44 },
+          { key: 'dueDate', width: 16 },
+          { key: 'priority', width: 14 },
+          { key: 'status', width: 16 }
+        ];
+
+        wsTasks.getRow(1).height = 30;
+        const taskHeaders = ['Company Name', 'Task Description', 'Due Date', 'Priority', 'Status'];
+        const tHeaderRow = wsTasks.getRow(1);
+        taskHeaders.forEach((h, i) => {
+          const c = tHeaderRow.getCell(i + 1);
+          c.value = h;
+          c.font = { name: 'Calibri', size: 11, bold: true, color: { argb: 'FFFFFFFF' } };
+          c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF2D6A4F' } };
+          c.alignment = { vertical: 'middle', horizontal: 'center' };
+        });
+
+        tasks.forEach((t, idx) => {
+          const r = wsTasks.getRow(idx + 2);
+          r.height = 24;
+          r.values = [
+            t.company || 'General',
+            t.title,
+            t.dueDate || t.date || '-',
+            t.priority || 'Medium',
+            t.status || 'To Do'
+          ];
+          r.eachCell((cell, colNumber) => {
+            cell.font = { name: 'Calibri', size: 10.5 };
+            cell.alignment = { vertical: 'middle', horizontal: colNumber >= 3 ? 'center' : 'left' };
+            cell.border = { bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } } };
+          });
+        });
+
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Mawasem_Export_CRM_${referenceDate}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        showToast('تم تصدير شيت الإكسل بنجاح!', 'success');
+      } catch (err) {
+        console.error(err);
+        alert('حدث خطأ أثناء تصدير الإكسل: ' + err.message);
+      } finally {
+        btn.innerHTML = originalHtml;
+        btn.disabled = false;
+      }
+    }
+
+    let pendingConfirmAction = null;
+    function openConfirmModal(title, msg, onConfirm) {
+      document.getElementById('confirmModalTitle').textContent = title;
+      document.getElementById('confirmModalMessage').textContent = msg;
+      pendingConfirmAction = onConfirm;
+      document.getElementById('confirmModal').classList.remove('hidden');
+    }
+    function closeConfirmModal() {
+      document.getElementById('confirmModal').classList.add('hidden');
+      pendingConfirmAction = null;
+    }
+    document.getElementById('confirmModalBtn').addEventListener('click', () => {
+      if (typeof pendingConfirmAction === 'function') pendingConfirmAction();
+      closeConfirmModal();
+    });
+
+    function copyText(text, msg = 'Copied!') {
+      if (!text) return;
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      showToast(msg, 'success');
+    }
+
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      const colors = { success: 'bg-mawasem-dark text-white border-emerald-400/40', info: 'bg-slate-800 text-white border-slate-600', error: 'bg-rose-600 text-white border-rose-400' };
+      toast.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-lg border text-xs sm:text-sm font-medium transition-all duration-300 ${colors[type] || colors.success}`;
+      toast.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-300"></i><span>${escapeHTML(message)}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
+    }
+
+    function escapeHTML(str) {
+      if (str == null) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+  </script>
+</body>
+</html>
